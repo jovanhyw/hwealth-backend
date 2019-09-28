@@ -5,6 +5,7 @@ dotenv.config();
 const cors = require('cors');
 const helmet = require('helmet');
 const xss = require('xss-clean');
+const mongoSanitize = require('express-mongo-sanitize');
 
 /**
  * Import routes
