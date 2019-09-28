@@ -12,7 +12,7 @@
 
 This project aims to comply to good information security practices while bringing out a functional application.
 
-HWealth is a platform where users can find "Pro-bono" services provided by medical professionals on this platform. Medical professionals go through a verification process done by us before being allow to be on the platform.
+HWealth is a platform where users can find "Pro-bono" services provided by medical professionals. Medical professionals go through a verification process done by us before being allowed to provide their services on the platform.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -69,8 +69,8 @@ Add additional notes about how to deploy this on a live system.
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 - [MongoDB](https://www.mongodb.com/) - Database
+- [NodeJS](https://nodejs.org/en/) - Server Environment
 - [Express](https://expressjs.com/) - Server Framework
-- [NodeJs](https://nodejs.org/en/) - Server Environment
 
 ## ✍️ Authors <a name = "authors"></a>
 
