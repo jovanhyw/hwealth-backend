@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
 const cors = require('cors');
+const helmet = require('helmet');
+const xss = require('xss-clean');
 
 /**
  * Import routes
@@ -26,8 +28,13 @@ mongoose
 /**
  * Middlewares
  */
-app.use(express.json());
-app.use(cors());
+
+// max body limit 10kb to prevent DOS. can up if needed.
+app.use(express.json({ limit: '10kb' }));
+app.use(helmet());
+app.use(cors()); // todo: stricter cors settings
+app.use(xss());
+app.use(mongoSanitize());
 
 /**
  * Routes
