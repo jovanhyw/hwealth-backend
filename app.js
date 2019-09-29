@@ -44,6 +44,6 @@ app.use(mongoSanitize());
 app.use('/api/test', testRoutes);
 app.use('/api/account', accountRoutes);
 
-app.listen(PORT || 3000, () =>
-  console.log(`Express server started on port ${PORT}`)
-);
+app.listen(PORT, () => {
+  console.log(`Express server started on port ${PORT}`);
+});
