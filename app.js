@@ -14,6 +14,7 @@ const testRoutes = require('./routes/test.route');
 const accountRoutes = require('./routes/account.route');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 /**
  * Connection to database
@@ -43,4 +44,6 @@ app.use(mongoSanitize());
 app.use('/api/test', testRoutes);
 app.use('/api/account', accountRoutes);
 
-app.listen(3000, () => console.log('Express server started on port 3000'));
+app.listen(PORT || 3000, () =>
+  console.log(`Express server started on port ${PORT}`)
+);
