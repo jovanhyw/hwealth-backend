@@ -41,7 +41,13 @@ const AccountSchema = new mongoose.Schema({
   },
   role: {
     type: String,
+    required: true,
     enum: ['User', 'Professional', 'Admin']
+  },
+  locked: {
+    type: Boolean,
+    require: true,
+    default: false
   }
 });
 
