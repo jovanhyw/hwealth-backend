@@ -4,6 +4,7 @@ const roleEnum = ['User', 'Professional', 'Admin'];
 // Todo: password regex for complexity
 const registerValidation = data => {
   const schema = Joi.object({
+    fullname: Joi.string().required(),
     username: Joi.string()
       .required()
       .min(5)
