@@ -2,9 +2,16 @@ const Account = require('../models/Account');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const AuthService = {};
+const { loginValidation } = require('../utils/validation');
 
 AuthService.login = async (req, res) => {
   // login input validation
+  const { error } = loginValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
 
   // check if username exists in db
   const account = await Account.findOne({ username: req.body.username });
@@ -30,14 +37,15 @@ AuthService.login = async (req, res) => {
       { expiresIn: '10m' }
     );
     res.status(200).send({
-      _id: account._id,
+      error: false,
       username: account.username,
       token: token
     });
   } catch (err) {
+    // todo: log the error
     res.status(500).send({
       error: true,
-      message: err.message
+      message: 'Internal Server Error. Unable to create token.'
     });
   }
 };
