@@ -12,6 +12,7 @@ const mongoSanitize = require('express-mongo-sanitize');
  */
 const testRoutes = require('./routes/test.route');
 const accountRoutes = require('./routes/account.route');
+const authRoutes = require('./routes/auth.route');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -43,6 +44,7 @@ app.use(mongoSanitize());
  */
 app.use('/api/test', testRoutes);
 app.use('/api/account', accountRoutes);
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Express server started on port ${PORT}`);

@@ -3,6 +3,7 @@ const Profile = require('../models/Profile');
 const bcrypt = require('bcryptjs');
 const AccountService = {};
 const { registerValidation } = require('../utils/validation');
+const mongoose = require('mongoose');
 
 AccountService.register = async (req, res) => {
   // validate inputs before creating the account
@@ -28,8 +29,6 @@ AccountService.register = async (req, res) => {
       message: 'Email already exists.'
     });
 
-  // Todo, get fullname as input so that
-  // the user can set a profile
   const { fullname, username, email, role } = req.body;
 
   // hash password
@@ -75,6 +74,28 @@ AccountService.register = async (req, res) => {
       message: err.message
     });
   }
+};
+
+AccountService.updateEmail = async (req, res) => {
+  // do input validation
+  // check if email exists in db
+  // const emailExist = await Account.findOne({ email: req.body.email });
+  // if (emailExist)
+  //   return res.status(400).send({
+  //     error: true,
+  //     message: 'Email already exists.'
+  //   });
+  // try {
+  //   await Account.findByIdAndUpdate(
+  //     new mongoose.Types.ObjectId(req.params),
+  //     req.body.email
+  //   );
+  // } catch (err) {
+  //   res.status(400).send({
+  //     error: true,
+  //     message: err.message
+  //   });
+  // }
 };
 
 module.exports = AccountService;
