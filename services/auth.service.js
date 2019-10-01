@@ -69,6 +69,13 @@ AuthService.verifyToken = (req, res, next) => {
       message: 'Access Denied. Missing token in header.'
     });
 
+  if (!bearerHeader.startsWith('Bearer '))
+    return res.status(400).send({
+      error: true,
+      message:
+        'Bad headers. Please ensure you are following the Bearer Authorization Pattern.'
+    });
+
   try {
     // split bearer at space...format is "Bearer {token}"
     const bearer = bearerHeader.split(' ');
