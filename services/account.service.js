@@ -147,9 +147,9 @@ AccountService.updatePassword = async (req, res) => {
       account.password
     );
     if (!validPassword)
-      return res.status(401).send({
+      return res.status(400).send({
         error: true,
-        message: 'Authentication failed.'
+        message: `Old password don't match.`
       });
 
     // change pass
