@@ -17,7 +17,7 @@ ProfileService.getProfile = async (req, res) => {
     });
   } catch (err) {
     return res.status(400).send({
-      error: false,
+      error: true,
       message: 'Invalid Account ID.'
     });
   }
@@ -44,13 +44,13 @@ ProfileService.updateProfile = async (req, res) => {
       });
     } catch (err) {
       return res.status(500).send({
-        error: false,
+        error: true,
         message: 'Internal Server Error. Failed to updated profile.'
       });
     }
   } catch (err) {
     return res.status(400).send({
-      error: false,
+      error: true,
       message: 'Invalid Account ID.'
     });
   }
