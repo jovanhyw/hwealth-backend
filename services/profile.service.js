@@ -49,7 +49,7 @@ ProfileService.updateProfile = async (req, res) => {
       });
     }
   } catch (err) {
-    return res.status(500).send({
+    return res.status(400).send({
       error: false,
       message: 'Invalid Account ID.'
     });
