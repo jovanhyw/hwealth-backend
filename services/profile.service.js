@@ -12,7 +12,7 @@ ProfileService.getProfile = async (req, res) => {
 
     return res.status(200).send({
       error: false,
-      message: 'Profile successfully retrieved.',
+      message: 'Profile retrieved successfully.',
       profile
     });
   } catch (err) {

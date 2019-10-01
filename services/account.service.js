@@ -15,7 +15,7 @@ AccountService.getAccount = async (req, res) => {
 
     return res.status(200).send({
       error: false,
-      message: 'Account successfully retrieved.',
+      message: 'Account retrieved successfully.',
       account
     });
   } catch (err) {
@@ -87,7 +87,7 @@ AccountService.register = async (req, res) => {
 
     res.status(201).send({
       error: false,
-      message: 'Account created.'
+      message: 'Account created successfully.'
     });
   } catch (err) {
     res.status(400).send({
@@ -116,7 +116,7 @@ AccountService.updateEmail = async (req, res) => {
 
     res.status(200).send({
       error: false,
-      message: 'Email successfully updated.',
+      message: 'Email updated successfully.',
       email: updated.email
     });
   } catch (err) {
@@ -165,12 +165,12 @@ AccountService.updatePassword = async (req, res) => {
 
       res.status(200).send({
         error: false,
-        message: 'Password successfully updated.'
+        message: 'Password updated successfully.'
       });
     } catch (err) {
       res.status(500).send({
         error: true,
-        message: 'Internal Server Error. Failed to updated password.'
+        message: 'Internal Server Error. Failed to update password.'
       });
     }
   } catch (err) {
