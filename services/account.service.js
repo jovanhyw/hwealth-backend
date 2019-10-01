@@ -6,6 +6,25 @@ const { registerValidation } = require('../utils/validation');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
+AccountService.getAccount = async (req, res) => {
+  try {
+    const account = await Account.findById(
+      { _id: ObjectId(req.params.id) },
+      'username email -_id'
+    );
+
+    return res.status(200).send({
+      error: false,
+      message: account
+    });
+  } catch (err) {
+    return res.status(404).send({
+      error: false,
+      message: 'Account ID not found.'
+    });
+  }
+};
+
 AccountService.register = async (req, res) => {
   // validate inputs before creating the account
   const { error } = registerValidation(req.body);
