@@ -23,7 +23,9 @@ const PORT = process.env.PORT || 3000;
 mongoose
   .connect(process.env.DB_CONN, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true
   })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.log(err));
@@ -43,7 +45,7 @@ app.use(mongoSanitize());
  * Routes
  */
 app.use('/api/test', testRoutes);
-app.use('/api/account', accountRoutes);
+app.use('/api/accounts', accountRoutes);
 app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {

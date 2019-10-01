@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const AccountService = {};
 const { registerValidation } = require('../utils/validation');
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 AccountService.register = async (req, res) => {
   // validate inputs before creating the account
@@ -79,23 +80,85 @@ AccountService.register = async (req, res) => {
 AccountService.updateEmail = async (req, res) => {
   // do input validation
   // check if email exists in db
-  // const emailExist = await Account.findOne({ email: req.body.email });
-  // if (emailExist)
-  //   return res.status(400).send({
-  //     error: true,
-  //     message: 'Email already exists.'
-  //   });
-  // try {
-  //   await Account.findByIdAndUpdate(
-  //     new mongoose.Types.ObjectId(req.params),
-  //     req.body.email
-  //   );
-  // } catch (err) {
-  //   res.status(400).send({
-  //     error: true,
-  //     message: err.message
-  //   });
-  // }
+  const emailExist = await Account.findOne({ email: req.body.email });
+  if (emailExist)
+    return res.status(400).send({
+      error: true,
+      message: 'Email already exists.'
+    });
+
+  try {
+    const updated = await Account.findByIdAndUpdate(
+      { _id: ObjectId(req.params.id) },
+      { email: req.body.email },
+      { new: true }
+    );
+
+    res.status(200).send({
+      error: false,
+      message: 'Email successfully updated.',
+      email: updated.email
+    });
+  } catch (err) {
+    res.status(400).send({
+      error: true,
+      message: err.message
+    });
+  }
+};
+
+AccountService.updatePassword = async (req, res) => {
+  // input validation
+
+  let account = null;
+  try {
+    account = await Account.findById(ObjectId(req.params.id));
+  } catch (err) {
+    return res.status(400).send({
+      error: true,
+      message: 'Invalid account id.'
+    });
+  }
+
+  try {
+    // verify password before allowing change
+    const validPassword = await bcrypt.compare(
+      req.body.currentPassword,
+      account.password
+    );
+    if (!validPassword)
+      return res.status(401).send({
+        error: true,
+        message: 'Authentication failed.'
+      });
+
+    // change pass
+    const salt = await bcrypt.genSalt(12);
+    const newHashedPw = await bcrypt.hash(req.body.newPassword, salt);
+
+    try {
+      await Account.findByIdAndUpdate(
+        { _id: ObjectId(req.params.id) },
+        { password: newHashedPw },
+        { new: true }
+      );
+
+      res.status(200).send({
+        error: false,
+        message: 'Password successfully updated.'
+      });
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error. Failed to updated password.'
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Internal Server Error.'
+    });
+  }
 };
 
 module.exports = AccountService;
