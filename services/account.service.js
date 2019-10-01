@@ -15,7 +15,8 @@ AccountService.getAccount = async (req, res) => {
 
     return res.status(200).send({
       error: false,
-      message: account
+      message: 'Account successfully retrieved.',
+      account
     });
   } catch (err) {
     return res.status(404).send({
@@ -135,7 +136,7 @@ AccountService.updatePassword = async (req, res) => {
   } catch (err) {
     return res.status(400).send({
       error: true,
-      message: 'Invalid account id.'
+      message: 'Invalid Account ID.'
     });
   }
 

@@ -13,6 +13,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const testRoutes = require('./routes/test.route');
 const accountRoutes = require('./routes/account.route');
 const authRoutes = require('./routes/auth.route');
+const profileRoutes = require('./routes/profile.route');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,6 +41,15 @@ app.use(helmet());
 app.use(cors()); // todo: stricter cors settings
 app.use(xss());
 app.use(mongoSanitize());
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).send({
+      error: true,
+      message: 'Invalid JSON Body.'
+    });
+  }
+  return next();
+});
 
 /**
  * Routes
@@ -47,6 +57,7 @@ app.use(mongoSanitize());
 app.use('/api/test', testRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/profiles', profileRoutes);
 
 app.listen(PORT, () => {
   console.log(`Express server started on port ${PORT}`);
