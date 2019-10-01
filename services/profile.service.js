@@ -4,7 +4,7 @@ const ProfileService = {};
 ProfileService.getProfile = async (req, res) => {
   try {
     const profile = await Profile.findOne(
-      { accountId: req.params.accountid },
+      { accountId: req.account.accountid },
       '-_id -createdAt -updatedAt -__v -accountId'
     );
 
@@ -23,7 +23,7 @@ ProfileService.getProfile = async (req, res) => {
 
 ProfileService.updateProfile = async (req, res) => {
   try {
-    const profile = await Profile.findOne({ accountId: req.params.accountid });
+    const profile = await Profile.findOne({ accountId: req.account.accountid });
 
     try {
       const updated = await Profile.findByIdAndUpdate(

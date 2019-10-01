@@ -9,7 +9,7 @@ const ObjectId = mongoose.Types.ObjectId;
 AccountService.getAccount = async (req, res) => {
   try {
     const account = await Account.findById(
-      { _id: ObjectId(req.params.id) },
+      { _id: ObjectId(req.account.accountid) },
       'username email -_id'
     );
 
@@ -109,7 +109,7 @@ AccountService.updateEmail = async (req, res) => {
 
   try {
     const updated = await Account.findByIdAndUpdate(
-      { _id: ObjectId(req.params.id) },
+      { _id: ObjectId(req.account.accountid) },
       { email: req.body.email },
       { new: true }
     );
@@ -132,7 +132,7 @@ AccountService.updatePassword = async (req, res) => {
 
   let account = null;
   try {
-    account = await Account.findById(ObjectId(req.params.id));
+    account = await Account.findById(ObjectId(req.account.accountid));
   } catch (err) {
     return res.status(400).send({
       error: true,
@@ -158,7 +158,7 @@ AccountService.updatePassword = async (req, res) => {
 
     try {
       await Account.findByIdAndUpdate(
-        { _id: ObjectId(req.params.id) },
+        { _id: ObjectId(req.account.accountid) },
         { password: newHashedPw },
         { new: true }
       );

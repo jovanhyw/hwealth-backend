@@ -11,8 +11,9 @@ const mongoSanitize = require('express-mongo-sanitize');
  * Import routes
  */
 const testRoutes = require('./routes/test.route');
-const accountRoutes = require('./routes/account.route');
+
 const authRoutes = require('./routes/auth.route');
+const accountRoutes = require('./routes/account.route');
 const profileRoutes = require('./routes/profile.route');
 
 const verifyToken = require('./services/auth.service').verifyToken;
@@ -57,9 +58,10 @@ app.use((err, req, res, next) => {
  * Routes
  */
 app.use('/api/test', testRoutes);
-app.use('/api/accounts', accountRoutes);
+
 app.use('/api/auth', authRoutes);
-app.use('/api/profiles', verifyToken, profileRoutes);
+app.use('/api/account', accountRoutes);
+app.use('/api/profile', verifyToken, profileRoutes);
 
 app.listen(PORT, () => {
   console.log(`Express server started on port ${PORT}`);

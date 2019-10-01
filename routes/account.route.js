@@ -1,10 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const accountService = require('../services/account.service');
+const verifyToken = require('../services/auth.service').verifyToken;
 
-router.get('/:id', accountService.getAccount);
+/**
+ * Public Routes
+ */
 router.post('/register', accountService.register);
-router.put('/:id/update-email', accountService.updateEmail);
-router.put('/:id/update-password', accountService.updatePassword);
+
+/**
+ * Protected Routes
+ */
+router.get('/', verifyToken, accountService.getAccount);
+router.put('/update-email', verifyToken, accountService.updateEmail);
+router.put('/update-password', verifyToken, accountService.updatePassword);
 
 module.exports = router;
