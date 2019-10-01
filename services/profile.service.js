@@ -1,7 +1,5 @@
 const Profile = require('../models/Profile');
 const ProfileService = {};
-const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
 
 ProfileService.getProfile = async (req, res) => {
   try {

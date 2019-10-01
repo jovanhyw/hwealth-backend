@@ -31,11 +31,19 @@ AuthService.login = async (req, res) => {
 
   // login validated, create and assign jwt
   try {
-    const token = jwt.sign(
-      { _id: account._id, username: account.username },
-      process.env.JWT_SECRET,
-      { expiresIn: '10m' }
-    );
+    const issuer = 'HWealth Backend Auth Service';
+    const subject = account.username;
+    const audience = 'hwealth';
+
+    const payload = { accountid: account._id, username: account.username };
+    const signOptions = {
+      expiresIn: '10m',
+      issuer,
+      subject,
+      audience
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, signOptions);
     res.status(200).send({
       error: false,
       username: account.username,
@@ -46,6 +54,36 @@ AuthService.login = async (req, res) => {
     res.status(500).send({
       error: true,
       message: 'Internal Server Error. Unable to create token.'
+    });
+  }
+};
+
+AuthService.verifyToken = (req, res, next) => {
+  // check if token is present in headers
+  const bearerHeader = req.headers['authorization'];
+
+  // if empty, throw error
+  if (typeof bearerHeader === 'undefined')
+    return res.status(401).send({
+      error: true,
+      message: 'Access Denied. Missing token in header.'
+    });
+
+  try {
+    // split bearer at space...format is "Bearer {token}"
+    const bearer = bearerHeader.split(' ');
+
+    // get token from array[1] that we split
+    const bearerToken = bearer[1];
+
+    // verify the token
+    const verified = jwt.verify(bearerToken, process.env.JWT_SECRET);
+    req.account = verified;
+    next();
+  } catch (err) {
+    res.status(401).send({
+      error: true,
+      message: 'Invalid token.'
     });
   }
 };
