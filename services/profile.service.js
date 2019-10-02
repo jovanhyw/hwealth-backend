@@ -8,13 +8,13 @@ ProfileService.getProfile = async (req, res) => {
       '-_id -createdAt -updatedAt -__v -accountId'
     );
 
-    return res.status(200).send({
+    res.status(200).send({
       error: false,
       message: 'Profile retrieved successfully.',
       profile
     });
   } catch (err) {
-    return res.status(400).send({
+    res.status(400).send({
       error: true,
       message: 'Invalid Account ID.'
     });
@@ -35,19 +35,19 @@ ProfileService.updateProfile = async (req, res) => {
         }
       );
 
-      return res.status(200).send({
+      res.status(200).send({
         error: false,
         message: 'Profile updated successfully.',
         profile: updated
       });
     } catch (err) {
-      return res.status(500).send({
+      res.status(500).send({
         error: true,
         message: 'Internal Server Error. Failed to updated profile.'
       });
     }
   } catch (err) {
-    return res.status(400).send({
+    res.status(400).send({
       error: true,
       message: 'Invalid Account ID.'
     });

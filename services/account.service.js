@@ -13,13 +13,13 @@ AccountService.getAccount = async (req, res) => {
       'username email -_id'
     );
 
-    return res.status(200).send({
+    res.status(200).send({
       error: false,
       message: 'Account retrieved successfully.',
       account
     });
   } catch (err) {
-    return res.status(404).send({
+    res.status(404).send({
       error: false,
       message: 'Account ID not found.'
     });

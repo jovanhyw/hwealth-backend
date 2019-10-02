@@ -30,7 +30,7 @@ StepsRecordService.getAllStepsRecord = async (req, res) => {
       {
         accountId: req.account.accountid
       },
-      'dateRecorded totalSteps -_id'
+      'dateRecorded totalSteps'
     ).sort({ dateRecorded: 'descending' });
 
     res.status(200).send({
@@ -68,7 +68,10 @@ StepsRecordService.updateStepsRecord = async (req, res) => {
     const updated = await StepsRecord.findByIdAndUpdate(
       { _id: req.params.id },
       req.body,
-      { new: true }
+      {
+        new: true,
+        fields: '_id dateRecorded totalSteps'
+      }
     );
 
     res.status(200).send({
