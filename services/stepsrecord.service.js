@@ -74,7 +74,7 @@ StepsRecordService.updateStepsRecord = async (req, res) => {
 
     res.status(200).send({
       error: false,
-      message: 'Steps records updated successfully.',
+      message: 'Steps record updated successfully.',
       record: updated
     });
   } catch (err) {
@@ -108,7 +108,7 @@ StepsRecordService.deleteStepsRecord = async (req, res) => {
 
     res.status(200).send({
       error: false,
-      message: 'Steps records deleted successfully.'
+      message: 'Steps record deleted successfully.'
     });
   } catch (err) {
     res.status(500).send({
