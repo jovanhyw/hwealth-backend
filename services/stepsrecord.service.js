@@ -27,21 +27,19 @@ StepsRecordService.createStepsRecord = async (req, res) => {
 StepsRecordService.getAllStepsRecord = async (req, res) => {
   try {
     const allRecords = await StepsRecord.find(
-      {
-        accountId: req.account.accountid
-      },
+      { accountId: req.account.accountid },
       'dateRecorded totalSteps'
     ).sort({ dateRecorded: 'descending' });
 
     res.status(200).send({
       error: false,
-      message: 'Steps Records retrieved successfully.',
+      message: 'Steps records retrieved successfully.',
       records: allRecords
     });
   } catch (err) {
     res.status(400).send({
       error: true,
-      message: 'Failed to retrieve steps record.'
+      message: 'Failed to retrieve steps records.'
     });
   }
 };
@@ -76,7 +74,7 @@ StepsRecordService.updateStepsRecord = async (req, res) => {
 
     res.status(200).send({
       error: false,
-      message: 'Steps Records updated successfully.',
+      message: 'Steps records updated successfully.',
       record: updated
     });
   } catch (err) {
@@ -110,7 +108,7 @@ StepsRecordService.deleteStepsRecord = async (req, res) => {
 
     res.status(200).send({
       error: false,
-      message: 'Steps Records deleted successfully.'
+      message: 'Steps records deleted successfully.'
     });
   } catch (err) {
     res.status(500).send({

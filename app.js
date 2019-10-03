@@ -16,6 +16,7 @@ const authRoutes = require('./routes/auth.route');
 const accountRoutes = require('./routes/account.route');
 const profileRoutes = require('./routes/profile.route');
 const stepsRecordRoutes = require('./routes/stepsrecord.route');
+const caloriesRecordRoutes = require('./routes/caloriesrecord.route');
 
 const verifyToken = require('./services/auth.service').verifyToken;
 
@@ -64,6 +65,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
 app.use('/api/profile', verifyToken, profileRoutes);
 app.use('/api/steps-record', verifyToken, stepsRecordRoutes);
+app.use('/api/calories-record', verifyToken, caloriesRecordRoutes);
 
 app.listen(PORT, () => {
   console.log(`Express server started on port ${PORT}`);
