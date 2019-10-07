@@ -2,7 +2,10 @@ const Account = require('../models/Account');
 const Profile = require('../models/Profile');
 const bcrypt = require('bcryptjs');
 const AccountService = {};
-const { registerValidation } = require('../utils/validation');
+const {
+  registerValidation,
+  updateEmailValidation
+} = require('../utils/validation');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -99,6 +102,13 @@ AccountService.register = async (req, res) => {
 
 AccountService.updateEmail = async (req, res) => {
   // do input validation
+  const { error } = updateEmailValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
   // check if email exists in db
   const emailExist = await Account.findOne({ email: req.body.email });
   if (emailExist)
