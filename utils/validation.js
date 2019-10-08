@@ -79,9 +79,19 @@ const updateBMIValidation = data => {
   return schema.validate(data);
 };
 
+const stepsValidation = data => {
+  const schema = Joi.object({
+    dateRecorded: Joi.date().required(),
+    totalSteps: Joi.number().required()
+  });
+
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateEmailValidation = updateEmailValidation;
 module.exports.updatePasswordValidation = updatePasswordValidation;
 module.exports.updateProfileValidation = updateProfileValidation;
 module.exports.updateBMIValidation = updateBMIValidation;
+module.exports.stepsValidation = stepsValidation;

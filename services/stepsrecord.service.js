@@ -1,8 +1,15 @@
 const StepsRecord = require('../models/StepsRecord');
 const StepsRecordService = {};
+const { stepsValidation } = require('../utils/validation');
 
 StepsRecordService.createStepsRecord = async (req, res) => {
   // input validation
+  const { error } = stepsValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
 
   const stepsRecord = new StepsRecord({
     accountId: req.account.accountid,
@@ -46,6 +53,12 @@ StepsRecordService.getAllStepsRecord = async (req, res) => {
 
 StepsRecordService.updateStepsRecord = async (req, res) => {
   // input validation
+  const { error } = stepsValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
 
   try {
     const record = await StepsRecord.findById({ _id: req.params.id });
@@ -86,8 +99,6 @@ StepsRecordService.updateStepsRecord = async (req, res) => {
 };
 
 StepsRecordService.deleteStepsRecord = async (req, res) => {
-  // input validation
-
   try {
     const record = await StepsRecord.findById({ _id: req.params.id });
 
