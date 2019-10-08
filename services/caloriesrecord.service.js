@@ -1,8 +1,16 @@
 const CaloriesRecord = require('../models/CaloriesRecord');
 const CaloriesRecordService = {};
+const { createCaloriesValidation } = require('../utils/validation');
 
 CaloriesRecordService.createCaloriesRecord = async (req, res) => {
   // input validation
+  const { error } = createCaloriesValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
   let totalCalories = 0;
   const { foodEaten } = req.body;
 
@@ -100,8 +108,6 @@ CaloriesRecordService.updateCaloriesRecord = async (req, res) => {
 };
 
 CaloriesRecordService.deleteCaloriesRecord = async (req, res) => {
-  // input validation
-
   try {
     const record = await CaloriesRecord.findById({ _id: req.params.id });
 
