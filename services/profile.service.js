@@ -1,6 +1,10 @@
 const Profile = require('../models/Profile');
 const ProfileService = {};
 const calcBMI = require('../utils/bmi');
+const {
+  updateProfileValidation,
+  updateBMIValidation
+} = require('../utils/validation');
 
 ProfileService.getProfile = async (req, res) => {
   try {
@@ -23,6 +27,14 @@ ProfileService.getProfile = async (req, res) => {
 };
 
 ProfileService.updateProfile = async (req, res) => {
+  // input validation
+  const { error } = updateProfileValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
   try {
     const profile = await Profile.findOne({ accountId: req.account.accountid });
 
@@ -56,6 +68,14 @@ ProfileService.updateProfile = async (req, res) => {
 };
 
 ProfileService.calculateBMI = async (req, res) => {
+  // input validation
+  const { error } = updateBMIValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
   const { weight, height } = req.body;
 
   const bmi = calcBMI(weight, height);

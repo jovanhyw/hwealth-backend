@@ -61,7 +61,27 @@ const updatePasswordValidation = data => {
   return schema.validate(data);
 };
 
+const updateProfileValidation = data => {
+  const schema = Joi.object({
+    fullname: Joi.string().required(),
+    dateOfBirth: Joi.date().required()
+  });
+
+  return schema.validate(data);
+};
+
+const updateBMIValidation = data => {
+  const schema = Joi.object({
+    weight: Joi.number().required(),
+    height: Joi.number().required()
+  });
+
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateEmailValidation = updateEmailValidation;
 module.exports.updatePasswordValidation = updatePasswordValidation;
+module.exports.updateProfileValidation = updateProfileValidation;
+module.exports.updateBMIValidation = updateBMIValidation;
