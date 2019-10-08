@@ -98,6 +98,16 @@ const createCaloriesValidation = data => {
   return schema.validate(data);
 };
 
+const updateCaloriesValidation = data => {
+  const schema = Joi.object({
+    dateRecorded: Joi.date(),
+    mealType: Joi.string(),
+    foodEaten: Joi.array()
+  });
+
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateEmailValidation = updateEmailValidation;
@@ -106,3 +116,4 @@ module.exports.updateProfileValidation = updateProfileValidation;
 module.exports.updateBMIValidation = updateBMIValidation;
 module.exports.stepsValidation = stepsValidation;
 module.exports.createCaloriesValidation = createCaloriesValidation;
+module.exports.updateCaloriesValidation = updateCaloriesValidation;

@@ -1,6 +1,9 @@
 const CaloriesRecord = require('../models/CaloriesRecord');
 const CaloriesRecordService = {};
-const { createCaloriesValidation } = require('../utils/validation');
+const {
+  createCaloriesValidation,
+  updateCaloriesValidation
+} = require('../utils/validation');
 
 CaloriesRecordService.createCaloriesRecord = async (req, res) => {
   // input validation
@@ -61,13 +64,22 @@ CaloriesRecordService.getAllCaloriesRecord = async (req, res) => {
 
 CaloriesRecordService.updateCaloriesRecord = async (req, res) => {
   // input validation
+  const { error } = updateCaloriesValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
 
   let totalCalories = 0;
-  const { foodEaten } = req.body;
 
-  foodEaten.forEach(food => {
-    totalCalories = totalCalories + food.calories;
-  });
+  if (req.body.foodEaten) {
+    const { foodEaten } = req.body;
+
+    foodEaten.forEach(food => {
+      totalCalories = totalCalories + food.calories;
+    });
+  }
 
   try {
     const record = await CaloriesRecord.findById({ _id: req.params.id });
