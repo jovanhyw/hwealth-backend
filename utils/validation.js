@@ -10,7 +10,9 @@ const registerValidation = data => {
       .min(5)
       .max(30)
       .pattern(/^\S*$/),
-    password: Joi.string().pattern(/^\S*$/),
+    password: Joi.string()
+      .required()
+      .pattern(/^\S*$/),
     email: Joi.string()
       .required()
       .email()
@@ -43,6 +45,23 @@ const updateEmailValidation = data => {
   return schema.validate(data);
 };
 
+const updatePasswordValidation = data => {
+  const schema = Joi.object({
+    currentPassword: Joi.string()
+      .required()
+      .pattern(/^\S*$/),
+    newPassword: Joi.string()
+      .required()
+      .pattern(/^\S*$/),
+    confirmPassword: Joi.string()
+      .required()
+      .pattern(/^\S*$/)
+  });
+
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateEmailValidation = updateEmailValidation;
+module.exports.updatePasswordValidation = updatePasswordValidation;

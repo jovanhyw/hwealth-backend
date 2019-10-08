@@ -4,7 +4,8 @@ const bcrypt = require('bcryptjs');
 const AccountService = {};
 const {
   registerValidation,
-  updateEmailValidation
+  updateEmailValidation,
+  updatePasswordValidation
 } = require('../utils/validation');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -139,6 +140,18 @@ AccountService.updateEmail = async (req, res) => {
 
 AccountService.updatePassword = async (req, res) => {
   // input validation
+  const { error } = updatePasswordValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
+  if (req.body.newPassword !== req.body.confirmPassword)
+    return res.status(400).send({
+      error: true,
+      message: "New passwords don't match."
+    });
 
   let account = null;
   try {
