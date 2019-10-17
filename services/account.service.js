@@ -228,6 +228,11 @@ AccountService.updatePassword = async (req, res) => {
   }
 };
 
-AccountService.verifyEmail = async (req, res) => {};
+AccountService.verifyEmail = async (req, res) => {
+  res.status(200).send({
+    error: false,
+    message: 'Email is verified!'
+  });
+};
 
 module.exports = AccountService;
