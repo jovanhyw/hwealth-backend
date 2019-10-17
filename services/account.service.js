@@ -236,7 +236,7 @@ AccountService.verifyEmail = async (req, res) => {
     return res.status(400).send({
       error: true,
       message: 'Unable to find valid token. Your token may have expired.',
-      tokenParams: req.params.verificationToken
+      token: req.params.verificationToken
     });
 
   const account = await Account.findById({
