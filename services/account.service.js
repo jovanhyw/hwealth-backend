@@ -11,6 +11,7 @@ const {
 } = require('../utils/validation');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
+const { sendEmailVerification } = require('../utils/sendEmailVerification');
 
 AccountService.getAccount = async (req, res) => {
   try {
@@ -98,6 +99,11 @@ AccountService.register = async (req, res) => {
 
       try {
         await emailToken.save();
+        sendEmailVerification(
+          createdAccount.email,
+          createdAccount._id,
+          emailToken.token
+        );
       } catch (err) {
         res.status(500).send({
           error: true,
