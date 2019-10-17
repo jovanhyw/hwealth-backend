@@ -229,10 +229,42 @@ AccountService.updatePassword = async (req, res) => {
 };
 
 AccountService.verifyEmail = async (req, res) => {
-  res.status(200).send({
-    error: false,
-    message: 'Email is verified!'
+  const emailTokenExist = await EmailToken.findOne({
+    token: req.params.verificationToken
   });
+  if (!emailTokenExist)
+    return res.status(400).send({
+      error: true,
+      message: 'Unable to find valid token. Your token may have expired.'
+    });
+
+  const account = await Account.findById({
+    _id: ObjectId(emailTokenExist.accountId)
+  });
+  if (!account)
+    return res.status(400).send({
+      error: true,
+      message: 'Unable to find an account for this token.'
+    });
+  if (account.verified)
+    return res.status(400).send({
+      error: true,
+      message: 'This account has already been verified.'
+    });
+
+  try {
+    account.verified = true;
+    account.save();
+    res.status(200).send({
+      error: false,
+      message: 'Email is verified!'
+    });
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Failed to verify email address.'
+    });
+  }
 };
 
 module.exports = AccountService;
