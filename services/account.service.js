@@ -204,4 +204,6 @@ AccountService.updatePassword = async (req, res) => {
   }
 };
 
+AccountService.verifyEmail = async (req, res) => {};
+
 module.exports = AccountService;

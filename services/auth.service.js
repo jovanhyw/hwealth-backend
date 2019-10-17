@@ -29,6 +29,14 @@ AuthService.login = async (req, res) => {
       message: 'Authentication failed.'
     });
 
+  // check if email is verified
+  if (!account.verified)
+    return res.status(401).send({
+      error: true,
+      message:
+        'Your email is not verified. Please follow the link sent to your email address that is associated with this account.'
+    });
+
   // login validated, create and assign jwt
   try {
     const issuer = 'HWealth Backend Auth Service';
