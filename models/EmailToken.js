@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const EmailTokenSchema = new mongoose.Schema({
-  _accountId: {
+  accountId: {
     type: mongoose.Schema.Types.ObjectId,
     require: true,
     ref: 'Account'

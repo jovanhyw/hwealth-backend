@@ -1,5 +1,7 @@
 const Account = require('../models/Account');
 const Profile = require('../models/Profile');
+const EmailToken = require('../models/EmailToken');
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const AccountService = {};
 const {
@@ -87,11 +89,27 @@ AccountService.register = async (req, res) => {
           message: err.message
         });
       }
+
+      // create EmailToken for verification
+      const emailToken = new EmailToken({
+        accountId: createdAccount._id,
+        token: crypto.randomBytes(16).toString('hex')
+      });
+
+      try {
+        await emailToken.save();
+      } catch (err) {
+        res.status(500).send({
+          error: true,
+          message: 'Failed to create email verification token.'
+        });
+      }
     }
 
     res.status(201).send({
       error: false,
-      message: 'Account created successfully.'
+      message:
+        'Account created successfully. Please follow the link sent to your email address verify your account.'
     });
   } catch (err) {
     res.status(400).send({
