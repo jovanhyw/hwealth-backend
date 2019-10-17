@@ -36,9 +36,6 @@ const AccountSchema = new mongoose.Schema({
     required: true,
     default: false
   },
-  verificationToken: {
-    type: String
-  },
   role: {
     type: String,
     required: true,
