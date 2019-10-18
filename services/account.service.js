@@ -233,7 +233,7 @@ AccountService.verifyEmail = async (req, res) => {
     token: req.query.verificationToken
   });
   if (!emailTokenExist)
-    return res.status(400).send({
+    return res.status(404).send({
       error: true,
       message: 'Unable to find valid token. Your token may have expired.'
     });
@@ -242,7 +242,7 @@ AccountService.verifyEmail = async (req, res) => {
     _id: ObjectId(emailTokenExist.accountId)
   });
   if (!account)
-    return res.status(400).send({
+    return res.status(404).send({
       error: true,
       message: 'Unable to find an account for this token.'
     });
