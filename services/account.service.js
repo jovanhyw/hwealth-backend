@@ -253,7 +253,7 @@ AccountService.verifyEmail = async (req, res) => {
     account.save();
     res.status(200).send({
       error: false,
-      message: 'Email is verified!'
+      message: 'Email is verified successfully.'
     });
   } catch (err) {
     res.status(500).send({
