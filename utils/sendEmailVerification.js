@@ -2,7 +2,7 @@ const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const sendEmailVerification = (recipient, accountId, token) => {
+const sendEmailVerification = (recipient, token) => {
   const message = {
     to: recipient,
     from: 'noreply@hwealth.com',
@@ -19,9 +19,7 @@ const sendEmailVerification = (recipient, accountId, token) => {
   
   <a href="` +
       `${process.env.API_HOST_NAME}` +
-      `/api/account/verify-email?accountId=` +
-      `${accountId}` +
-      `&verificationToken=` +
+      `/api/account/verify-email?verificationToken=` +
       `${token}` +
       `">Verify Email Address</a>
   
