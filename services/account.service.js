@@ -115,7 +115,7 @@ AccountService.register = async (req, res) => {
     res.status(201).send({
       error: false,
       message:
-        'Account created successfully. Please follow the link sent to your email address verify your account.'
+        'Account created successfully. Please follow the link sent to your email address and verify your account.'
     });
   } catch (err) {
     res.status(400).send({
@@ -230,7 +230,7 @@ AccountService.updatePassword = async (req, res) => {
 
 AccountService.verifyEmail = async (req, res) => {
   const emailTokenExist = await EmailToken.findOne({
-    token: req.query.verificationToken
+    token: req.query.token
   });
   if (!emailTokenExist)
     return res.status(404).send({

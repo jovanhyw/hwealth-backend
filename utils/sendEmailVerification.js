@@ -19,7 +19,7 @@ const sendEmailVerification = (recipient, token) => {
   
   <a href="` +
       `${process.env.API_HOST_NAME}` +
-      `/api/account/verify-email?verificationToken=` +
+      `/api/account/verify-email?token=` +
       `${token}` +
       `">Verify Email Address</a>
   
