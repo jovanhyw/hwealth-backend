@@ -5,7 +5,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const sendEmailVerification = (recipient, token) => {
   const message = {
     to: recipient,
-    from: 'noreply@hwealth.com',
+    from: 'noreply@hwealth.me',
     subject: 'Verify your email for HWealth',
     html:
       `

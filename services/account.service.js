@@ -263,4 +263,51 @@ AccountService.verifyEmail = async (req, res) => {
   }
 };
 
+AccountService.resendEmailToken = async (req, res) => {
+  try {
+    const account = await Account.findOne(
+      { email: req.body.email },
+      '-password'
+    );
+    if (!account)
+      return res.status(400).send({
+        error: true,
+        message: 'Email is not associated with any accounts.'
+      });
+
+    if (account.verified)
+      return res.status(400).send({
+        error: true,
+        message:
+          'The account associated with this email address has already been verified.'
+      });
+
+    // create EmailToken for verification
+    const emailToken = new EmailToken({
+      accountId: account._id,
+      token: crypto.randomBytes(16).toString('hex')
+    });
+
+    try {
+      await emailToken.save();
+      sendEmailVerification(account.email, emailToken.token);
+
+      res.status(200).send({
+        error: false,
+        message: 'A verification email has been sent to ' + account.email + '.'
+      });
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Failed to create email verification token.'
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Internal Server Error.'
+    });
+  }
+};
+
 module.exports = AccountService;
