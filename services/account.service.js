@@ -264,6 +264,14 @@ AccountService.verifyEmail = async (req, res) => {
 };
 
 AccountService.resendEmailToken = async (req, res) => {
+  // do input validation
+  const { error } = updateEmailValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
   try {
     const account = await Account.findOne(
       { email: req.body.email },
