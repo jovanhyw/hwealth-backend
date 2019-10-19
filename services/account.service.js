@@ -57,7 +57,7 @@ AccountService.register = async (req, res) => {
       message: 'Email already exists.'
     });
 
-  const { fullname, username, email, role } = req.body;
+  const { fullname, username, email } = req.body;
 
   // hash password
   const salt = await bcrypt.genSalt(12);
@@ -67,8 +67,7 @@ AccountService.register = async (req, res) => {
   const account = new Account({
     username,
     password: hashedPassword,
-    email,
-    role
+    email
   });
 
   const profile = new Profile({
