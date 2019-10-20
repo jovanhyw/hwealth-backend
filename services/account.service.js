@@ -254,7 +254,9 @@ AccountService.verifyEmail = async (req, res) => {
     //   error: true,
     //   message: 'This account has already been verified.'
     // });
-    return res.sendFile(path.join(__dirname + '/views/email-verified.html'));
+    return res.sendFile(
+      path.join(__dirname + '/views/email-account-alr-verified.html')
+    );
 
   try {
     account.verified = true;
