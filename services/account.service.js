@@ -12,6 +12,7 @@ const {
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const { sendEmailVerification } = require('../utils/sendEmailVerification');
+const path = require('path');
 
 AccountService.getAccount = async (req, res) => {
   try {
@@ -228,37 +229,43 @@ AccountService.verifyEmail = async (req, res) => {
     token: req.query.token
   });
   if (!emailTokenExist)
-    return res.status(404).send({
-      error: true,
-      message: 'Unable to find valid token. Your token may have expired.'
-    });
+    // return res.status(404).send({
+    //   error: true,
+    //   message: 'Unable to find valid token. Your token may have expired.'
+    // });
+    return res.sendFile(
+      path.join(__dirname + '/views/email-token-expired.html')
+    );
 
   const account = await Account.findById({
     _id: ObjectId(emailTokenExist.accountId)
   });
   if (!account)
-    return res.status(404).send({
-      error: true,
-      message: 'Unable to find an account for this token.'
-    });
+    // return res.status(404).send({
+    //   error: true,
+    //   message: 'Unable to find an account for this token.'
+    // });
+    return res.sendFile(
+      path.join(__dirname + '/views/email-account-not-found.html')
+    );
+
   if (account.verified)
-    return res.status(400).send({
-      error: true,
-      message: 'This account has already been verified.'
-    });
+    // return res.status(400).send({
+    //   error: true,
+    //   message: 'This account has already been verified.'
+    // });
+    return res.sendFile(path.join(__dirname + '/views/email-verified.html'));
 
   try {
     account.verified = true;
     account.save();
-    res.status(200).send({
-      error: false,
-      message: 'Email is verified successfully.'
-    });
+    res.sendFile(path.join(__dirname + '/email-verified.html'));
   } catch (err) {
-    res.status(500).send({
-      error: true,
-      message: 'Failed to verify email address.'
-    });
+    // res.status(500).send({
+    //   error: true,
+    //   message: 'Failed to verify email address.'
+    // });
+    res.sendFile(path.join(__dirname + '/email-failed.html'));
   }
 };
 
