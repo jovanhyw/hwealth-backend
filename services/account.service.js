@@ -259,13 +259,13 @@ AccountService.verifyEmail = async (req, res) => {
   try {
     account.verified = true;
     account.save();
-    res.sendFile(path.join(__dirname + '/email-verified.html'));
+    res.sendFile(path.join(__dirname + '/views/email-verified.html'));
   } catch (err) {
     // res.status(500).send({
     //   error: true,
     //   message: 'Failed to verify email address.'
     // });
-    res.sendFile(path.join(__dirname + '/email-failed.html'));
+    res.sendFile(path.join(__dirname + '/views/email-failed.html'));
   }
 };
 
