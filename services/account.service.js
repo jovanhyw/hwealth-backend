@@ -1,6 +1,7 @@
 const Account = require('../models/Account');
 const Profile = require('../models/Profile');
 const EmailToken = require('../models/EmailToken');
+const PasswordToken = require('../models/PasswordToken');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const AccountService = {};
@@ -12,6 +13,7 @@ const {
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const { sendEmailVerification } = require('../utils/sendEmailVerification');
+const { sendPasswordResetEmail } = require('../utils/sendPasswordResetEmail');
 const path = require('path');
 
 AccountService.getAccount = async (req, res) => {
@@ -316,6 +318,66 @@ AccountService.resendEmailToken = async (req, res) => {
       res.status(500).send({
         error: true,
         message: 'Failed to create email verification token.'
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Internal Server Error.'
+    });
+  }
+};
+
+AccountService.forgotPassword = async (req, res) => {
+  // do input validation
+  const { error } = updateEmailValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
+  try {
+    const account = await Account.findOne(
+      { email: req.body.email },
+      '-password'
+    );
+    if (!account)
+      return res.status(400).send({
+        error: true,
+        message: 'Email is not associated with any accounts.'
+      });
+
+    // check if there is alr a token generated
+    const tokenExist = await PasswordToken.findOne({ accountId: account._id });
+    if (tokenExist) {
+      return res.status(400).send({
+        error: true,
+        message:
+          'A token has already been generated for this account. Please check your email or wait 1 hour before requesting for a new token.'
+      });
+    }
+
+    const passwordToken = new PasswordToken({
+      accountId: account._id,
+      token: crypto.randomBytes(20).toString('hex')
+    });
+
+    try {
+      await passwordToken.save();
+      sendPasswordResetEmail(account.email, passwordToken.token);
+
+      res.status(200).send({
+        error: false,
+        message:
+          'A password reset link has been sent to ' +
+          account.email +
+          '. Please follow the instructions to reset your password'
+      });
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Failed to create password token.'
       });
     }
   } catch (err) {
