@@ -18,8 +18,8 @@ const sendPasswordResetEmail = (recipient, token) => {
   <div>&nbsp;</div>
   
   <a href="` +
-      `${process.env.API_HOST_NAME}` +
-      `/api/account/reset-password?token=` +
+      `${process.env.FRONTEND_HOST_NAME}` +
+      `/account/reset-password?token=` +
       `${token}` +
       `">Reset Account Password</a>
   
