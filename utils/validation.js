@@ -60,7 +60,7 @@ const updatePasswordValidation = data => {
 const updateProfileValidation = data => {
   const schema = Joi.object({
     fullname: Joi.string().required(),
-    dateOfBirth: Joi.date().required()
+    dateOfBirth: Joi.date()
   });
 
   return schema.validate(data);
