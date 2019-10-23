@@ -6,6 +6,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
+const cookieParser = require('cookie-parser');
+const csrf = require('csurf')
+
+// Route middlewares
+const csrfProtection = csrf({
+  cookie: true
+});
 
 /**
  * Import routes
@@ -39,6 +46,9 @@ mongoose
 /**
  * Middlewares
  */
+// Parse cookies
+// We need this because "cookies" is true in csrfProtection
+app.use(cookieParser());
 
 // max body limit 10kb to prevent DOS. can up if needed.
 app.use(express.json({ limit: '10kb' }));
