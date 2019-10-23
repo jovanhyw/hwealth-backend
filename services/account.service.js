@@ -8,7 +8,8 @@ const AccountService = {};
 const {
   registerValidation,
   updateEmailValidation,
-  updatePasswordValidation
+  updatePasswordValidation,
+  resetPasswordValidation
 } = require('../utils/validation');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -378,6 +379,60 @@ AccountService.forgotPassword = async (req, res) => {
       res.status(500).send({
         error: true,
         message: 'Failed to create password token.'
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Internal Server Error.'
+    });
+  }
+};
+
+AccountService.resetPassword = async (req, res) => {
+  // input validation for password
+  const { error } = resetPasswordValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
+  const tokenExist = await PasswordToken.findOne({ token: req.query.token });
+  if (!tokenExist)
+    return res.status(404).send({
+      error: true,
+      message: 'Unable to find valid token. Your token may have expired.'
+    });
+
+  const account = await Account.findById({
+    _id: ObjectId(tokenExist.accountId)
+  });
+  if (!account)
+    return res.status(404).send({
+      error: true,
+      message: 'Unable to find an account for this token.'
+    });
+
+  try {
+    const salt = await bcrypt.genSalt(12);
+    const newHashedPw = await bcrypt.hash(req.body.newPassword, salt);
+
+    try {
+      await Account.findByIdAndUpdate(
+        { _id: account._id },
+        { password: newHashedPw },
+        { new: true }
+      );
+
+      res.status(200).send({
+        error: false,
+        message: 'Password resetted successfully.'
+      });
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error. Failed to reset password.'
       });
     }
   } catch (err) {

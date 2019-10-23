@@ -10,6 +10,7 @@ router.post('/register', accountService.register);
 router.get('/verify-email', accountService.verifyEmail);
 router.post('/resend-email-token', accountService.resendEmailToken);
 router.post('/forgot-password', accountService.forgotPassword);
+router.post('/reset-password', accountService.resetPassword);
 
 /**
  * Protected Routes
