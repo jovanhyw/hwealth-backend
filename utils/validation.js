@@ -1,5 +1,4 @@
 const Joi = require('@hapi/joi');
-const roleEnum = ['User', 'Professional', 'Admin'];
 
 // Todo: password regex for complexity
 const registerValidation = data => {
@@ -16,10 +15,7 @@ const registerValidation = data => {
     email: Joi.string()
       .required()
       .email()
-      .pattern(/^\S*$/),
-    role: Joi.string()
-      .required()
-      .valid(...roleEnum)
+      .pattern(/^\S*$/)
   });
 
   return schema.validate(data);
@@ -64,7 +60,7 @@ const updatePasswordValidation = data => {
 const updateProfileValidation = data => {
   const schema = Joi.object({
     fullname: Joi.string().required(),
-    dateOfBirth: Joi.date().required()
+    dateOfBirth: Joi.date()
   });
 
   return schema.validate(data);

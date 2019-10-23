@@ -36,13 +36,11 @@ const AccountSchema = new mongoose.Schema({
     required: true,
     default: false
   },
-  verificationToken: {
-    type: String
-  },
   role: {
     type: String,
     required: true,
-    enum: ['User', 'Professional', 'Admin']
+    enum: ['User', 'Professional', 'Admin'],
+    default: 'User'
   },
   locked: {
     type: Boolean,

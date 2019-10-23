@@ -7,6 +7,9 @@ const verifyToken = require('../services/auth.service').verifyToken;
  * Public Routes
  */
 router.post('/register', accountService.register);
+router.get('/verify-email', accountService.verifyEmail);
+router.post('/resend-email-token', accountService.resendEmailToken);
+router.post('/forgot-password', accountService.forgotPassword);
 
 /**
  * Protected Routes
