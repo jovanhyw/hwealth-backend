@@ -19,15 +19,15 @@ CaptchaService.verifyCaptcha = async (req, res) => {
     .then(response => {
       if (response.data.success) {
         res.status(200).send({
-          ...response.data.success
+          ...response.data
         });
       } else {
-        res.status(401).send({ error: true, message: 'Failed captcha.' });
+        res.status(401).send({ ...response.data });
       }
     })
     .catch(err => {
       console.log(err);
-      res.status(401).send({ error: true, message: 'Failed captcha.' });
+      res.status(401).send({ ...response.data });
     });
 };
 
