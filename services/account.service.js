@@ -425,6 +425,17 @@ AccountService.resetPassword = async (req, res) => {
         { new: true }
       );
 
+      // delete the password token after the user reset the password
+      // so that the magic link will not work after the reset is done
+      try {
+        await PasswordToken.findOneAndDelete({ _id: tokenExist._id });
+      } catch (err) {
+        res.status(500).send({
+          error: true,
+          message: 'Internal Server Error.'
+        });
+      }
+
       res.status(200).send({
         error: false,
         message: 'Password resetted successfully.'
