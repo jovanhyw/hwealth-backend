@@ -69,7 +69,7 @@ app.use('/api/profile', verifyToken, profileRoutes);
 app.use('/api/steps-record', verifyToken, stepsRecordRoutes);
 app.use('/api/calories-record', verifyToken, caloriesRecordRoutes);
 app.use('/api/captcha', captchaRoutes);
-app.use('/api/two-factor', verifyToken, twoFactorRoutes);
+app.use('/api/two-factor', twoFactorRoutes);
 
 app.listen(PORT, () => {
   console.log(`Express server started on port ${PORT}`);

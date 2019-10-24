@@ -114,6 +114,16 @@ const resetPasswordValidation = data => {
   return schema.validate(data);
 };
 
+const twoFactorGenSecretValidation = data => {
+  const schema = Joi.object({
+    password: Joi.string()
+      .required()
+      .pattern(/^\S*$/)
+  });
+
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateEmailValidation = updateEmailValidation;
@@ -124,3 +134,4 @@ module.exports.stepsValidation = stepsValidation;
 module.exports.createCaloriesValidation = createCaloriesValidation;
 module.exports.updateCaloriesValidation = updateCaloriesValidation;
 module.exports.resetPasswordValidation = resetPasswordValidation;
+module.exports.twoFactorGenSecretValidation = twoFactorGenSecretValidation;
