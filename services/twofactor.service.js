@@ -1,5 +1,6 @@
 const Account = require('../models/Account');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const { twoFactorGenSecretValidation } = require('../utils/validation');
 const TwoFactorService = {};
@@ -62,11 +63,36 @@ TwoFactorService.authenticate = async (req, res) => {
     });
 
     if (tokenValid) {
-      res.status(200).send({
-        error: false,
-        message: 'Two Factor Authentication Success.',
-        valid: tokenValid
-      });
+      try {
+        const issuer = 'HWealth Backend Auth Service';
+        const subject = account.username;
+        const audience = 'hwealth';
+
+        const payload = {
+          accountid: account._id,
+          username: account.username,
+          twoFactorAuthenticated: true
+        };
+        const signOptions = {
+          expiresIn: '10m',
+          issuer,
+          subject,
+          audience
+        };
+
+        const jwtToken = jwt.sign(payload, process.env.JWT_SECRET, signOptions);
+        res.status(200).send({
+          error: false,
+          message: 'Two Factor Authentication Success.',
+          token: jwtToken
+        });
+      } catch (err) {
+        // todo: log the error
+        res.status(500).send({
+          error: true,
+          message: 'Internal Server Error. Unable to create token.'
+        });
+      }
     } else {
       res.status(401).send({
         error: true,
@@ -104,7 +130,7 @@ TwoFactorService.enable = async (req, res) => {
         res.status(200).send({
           error: false,
           message:
-            'Two Factor Authentication Success. Two Factor Authentication is enabled.',
+            'Two Factor Authentication Success. Two Factor Authentication has been enabled successfully.',
           valid: tokenValid
         });
       } catch (err) {
