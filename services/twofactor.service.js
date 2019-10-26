@@ -16,6 +16,13 @@ TwoFactorService.generateSecret = async (req, res) => {
 
   const account = await Account.findById({ _id: req.account.accountid });
 
+  if(account.twoFactorEnabled) {
+    return res.status(400).send({
+      error: true,
+      message: 'Two Factor Authentication is already enabled. Unable to generate a new secret.'
+    })
+  }
+
   // check if password is correct
   const validPass = await bcrypt.compare(req.body.password, account.password);
   if (!validPass)
