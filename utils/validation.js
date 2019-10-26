@@ -7,7 +7,10 @@ const registerValidation = data => {
       .required()
       .min(5)
       .max(30)
-      .pattern(/^\S*$/),
+      .pattern(/^\S*$/)
+      .messages({
+        'string.pattern.base': `No white spaces allowed in username.`
+      }),
     password: Joi.string()
       .required()
       .pattern(
@@ -20,6 +23,9 @@ const registerValidation = data => {
       .required()
       .email()
       .pattern(/^\S*$/)
+      .messages({
+        'string.pattern.base': `No white spaces allowed in email.`
+      })
   });
 
   return schema.validate(data);
@@ -40,6 +46,9 @@ const updateEmailValidation = data => {
       .required()
       .email()
       .pattern(/^\S*$/)
+      .messages({
+        'string.pattern.base': `No white spaces allowed in email.`
+      })
   });
 
   return schema.validate(data);
