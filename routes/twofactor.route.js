@@ -5,6 +5,11 @@ const verifyToken = require('../services/auth.service').verifyToken;
 const verifyPreToken = require('../services/auth.service').verifyPreToken;
 
 /**
+ * Public Routes
+ */
+router.post('/recover', twoFactorService.recover);
+
+/**
  * Protected Routes
  */
 router.post('/get-authenticator', verifyToken, twoFactorService.generateSecret);

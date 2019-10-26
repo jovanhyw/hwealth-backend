@@ -2,7 +2,10 @@ const Account = require('../models/Account');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
-const { twoFactorGenSecretValidation } = require('../utils/validation');
+const {
+  twoFactorGenSecretValidation,
+  twoFactorRecoverValidation
+} = require('../utils/validation');
 const generateRecoveryCode = require('../utils/generateRecoveryCode');
 const TwoFactorService = {};
 
@@ -227,6 +230,7 @@ TwoFactorService.disable = async (req, res) => {
   try {
     account.twoFactorEnabled = false;
     account.twoFactorSecret = null;
+    account.twoFactorRecoveryCode = null;
     await account.save();
 
     res.status(200).send({
@@ -260,6 +264,59 @@ TwoFactorService.getRecoveryCode = async (req, res) => {
     res.status(200).send({
       error: false,
       recoveryCode: recoveryCodeFriendly
+    });
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Internal Server Error.'
+    });
+  }
+};
+
+TwoFactorService.recover = async (req, res) => {
+  // input validation
+  const { error } = twoFactorRecoverValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
+  // check if username exists in db
+  const account = await Account.findOne({ username: req.body.username });
+  if (!account)
+    return res.status(401).send({
+      error: true,
+      message: 'Authentication failed.'
+    });
+
+  // check if password is correct
+  const validPass = await bcrypt.compare(req.body.password, account.password);
+  if (!validPass)
+    return res.status(401).send({
+      error: true,
+      message: 'Authentication failed.'
+    });
+
+  // check if recovery code matches
+  const recoveryCodeFriendly = req.body.recoveryCode;
+  const recoveryCode = recoveryCodeFriendly.replace(/ +/g, '');
+  if (recoveryCode !== account.twoFactorRecoveryCode) {
+    return res.status(401).send({
+      error: true,
+      message: 'Recovery Code do not match.'
+    });
+  }
+
+  try {
+    account.twoFactorEnabled = false;
+    account.twoFactorSecret = null;
+    account.twoFactorRecoveryCode = null;
+    await account.save();
+
+    res.status(200).send({
+      error: false,
+      message: 'Two Factor Authentication has been disabled.'
     });
   } catch (err) {
     res.status(500).send({
