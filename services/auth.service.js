@@ -97,7 +97,8 @@ AuthService.login = async (req, res) => {
     res.status(200).send({
       error: false,
       username: account.username,
-      token: token
+      token: token,
+      twoFactorEnabled: account.twoFactorEnabled
     });
   } catch (err) {
     // todo: log the error
