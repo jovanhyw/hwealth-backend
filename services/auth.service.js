@@ -35,21 +35,13 @@ AuthService.login = async (req, res) => {
   if (!validPass) {
     try {
       account.failedLoginAttempts += 1;
-      await account.save();
 
       // if login attempts = 10, lock the account
-      try {
-        if (account.failedLoginAttempts === 10) {
-          account.locked = true;
-        }
-
-        await account.save();
-      } catch (err) {
-        res.status(500).send({
-          error: true,
-          message: 'Internal Server Error.'
-        });
+      if (account.failedLoginAttempts === 10) {
+        account.locked = true;
       }
+
+      await account.save();
     } catch (err) {
       res.status(500).send({
         error: true,
