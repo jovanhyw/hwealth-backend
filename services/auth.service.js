@@ -43,7 +43,11 @@ AuthService.login = async (req, res) => {
     const subject = account.username;
     const audience = 'hwealth';
 
-    const payload = { accountid: account._id, username: account.username };
+    const payload = {
+      accountid: account._id,
+      username: account.username,
+      twoFactorAuthenticated: false
+    };
     const signOptions = {
       expiresIn: '10m',
       issuer,
@@ -66,7 +70,7 @@ AuthService.login = async (req, res) => {
   }
 };
 
-AuthService.verifyToken = (req, res, next) => {
+AuthService.verifyToken = async (req, res, next) => {
   // check if token is present in headers
   const bearerHeader = req.headers['authorization'];
 
@@ -93,6 +97,62 @@ AuthService.verifyToken = (req, res, next) => {
 
     // verify the token
     const verified = jwt.verify(bearerToken, process.env.JWT_SECRET);
+
+    try {
+      const account = await Account.findById({ _id: verified.accountid });
+
+      if (account.twoFactorEnabled && !verified.twoFactorAuthenticated) {
+        return res.status(401).send({
+          error: true,
+          message:
+            'Two Factor Authentication is enabled but Two Factor Authentication has not passed.'
+        });
+      }
+    } catch (err) {
+      res.status(404).send({
+        error: true,
+        message: 'Account ID not found.'
+      });
+    }
+
+    req.account = verified;
+    next();
+  } catch (err) {
+    res.status(401).send({
+      error: true,
+      message: 'Invalid token.'
+    });
+  }
+};
+
+AuthService.verifyPreToken = async (req, res, next) => {
+  // check if token is present in headers
+  const bearerHeader = req.headers['authorization'];
+
+  // if empty, throw error
+  if (typeof bearerHeader === 'undefined')
+    return res.status(401).send({
+      error: true,
+      message: 'Access Denied. Missing token in header.'
+    });
+
+  if (!bearerHeader.startsWith('Bearer '))
+    return res.status(400).send({
+      error: true,
+      message:
+        'Bad headers. Please ensure you are following the Bearer Authorization Pattern.'
+    });
+
+  try {
+    // split bearer at space...format is "Bearer {token}"
+    const bearer = bearerHeader.split(' ');
+
+    // get token from array[1] that we split
+    const bearerToken = bearer[1];
+
+    // verify the token
+    const verified = jwt.verify(bearerToken, process.env.JWT_SECRET);
+
     req.account = verified;
     next();
   } catch (err) {

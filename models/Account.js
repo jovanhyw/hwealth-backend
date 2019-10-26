@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-// Todo: validation for white spaces
-
 const AccountSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -46,6 +44,24 @@ const AccountSchema = new mongoose.Schema({
     type: Boolean,
     require: true,
     default: false
+  },
+  failedLoginAttempts: {
+    type: Number,
+    trim: true,
+    default: 0
+  },
+  twoFactorEnabled: {
+    type: Boolean,
+    require: true,
+    default: false
+  },
+  twoFactorSecret: {
+    type: String,
+    trim: true
+  },
+  twoFactorRecoveryCode: {
+    type: String,
+    trim: true
   }
 });
 
