@@ -37,22 +37,23 @@ AuthService.login = async (req, res) => {
       account.failedLoginAttempts += 1;
 
       // if login attempts = 10, lock the account
-      if (account.failedLoginAttempts === 10) {
+      if (account.failedLoginAttempts >= 10) {
         account.locked = true;
+        account.lockReason = 'Max login attempts.';
       }
 
       await account.save();
+
+      return res.status(401).send({
+        error: true,
+        message: 'Authentication failed.'
+      });
     } catch (err) {
       res.status(500).send({
         error: true,
         message: 'Internal Server Error.'
       });
     }
-
-    return res.status(401).send({
-      error: true,
-      message: 'Authentication failed.'
-    });
   }
 
   // check if email is verified
