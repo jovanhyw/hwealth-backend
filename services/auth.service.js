@@ -202,4 +202,24 @@ AuthService.verifyPreToken = async (req, res, next) => {
   }
 };
 
+AuthService.checkAdminRole = async (req, res, next) => {
+  try {
+    const account = await Account.findById({ _id: req.account.accountid });
+
+    if (account.role !== 'Admin') {
+      return res.status(403).send({
+        error: true,
+        message: 'You do not have access to this endpoint.'
+      });
+    }
+
+    next();
+  } catch (err) {
+    res.status(404).send({
+      error: true,
+      message: 'Account not found.'
+    });
+  }
+};
+
 module.exports = AuthService;

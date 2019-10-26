@@ -168,6 +168,43 @@ const twoFactorRecoverValidation = data => {
   return schema.validate(data);
 };
 
+const adminUpdateRoleValidation = data => {
+  const roleEnum = ['User', 'Professional'];
+  const schema = Joi.object({
+    email: Joi.string()
+      .required()
+      .email()
+      .pattern(/^\S*$/)
+      .messages({
+        'string.pattern.base': `No white spaces allowed in email.`
+      }),
+    role: Joi.string()
+      .required()
+      .valid(...roleEnum)
+  });
+
+  return schema.validate(data);
+};
+
+const adminUpdateLockValidation = data => {
+  const typeEnum = [0, 1];
+  const schema = Joi.object({
+    email: Joi.string()
+      .required()
+      .email()
+      .pattern(/^\S*$/)
+      .messages({
+        'string.pattern.base': `No white spaces allowed in email.`
+      }),
+    type: Joi.number()
+      .required()
+      .valid(...typeEnum),
+    lockReason: Joi.string()
+  });
+
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateEmailValidation = updateEmailValidation;
@@ -182,3 +219,5 @@ module.exports.twoFactorGenSecretValidation = twoFactorGenSecretValidation;
 module.exports.twoFactorAuthenticateValidation = twoFactorAuthenticateValidation;
 module.exports.twoFactorEnableValidation = twoFactorEnableValidation;
 module.exports.twoFactorRecoverValidation = twoFactorRecoverValidation;
+module.exports.adminUpdateRoleValidation = adminUpdateRoleValidation;
+module.exports.adminUpdateLockValidation = adminUpdateLockValidation;
