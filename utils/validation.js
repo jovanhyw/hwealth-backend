@@ -1,6 +1,5 @@
 const Joi = require('@hapi/joi');
 
-// Todo: password regex for complexity
 const registerValidation = data => {
   const schema = Joi.object({
     fullname: Joi.string().required(),
@@ -11,7 +10,12 @@ const registerValidation = data => {
       .pattern(/^\S*$/),
     password: Joi.string()
       .required()
-      .pattern(/^\S*$/),
+      .pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})(?=.\S*$)/
+      )
+      .messages({
+        'string.pattern.base': `Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.`
+      }),
     email: Joi.string()
       .required()
       .email()
@@ -43,15 +47,23 @@ const updateEmailValidation = data => {
 
 const updatePasswordValidation = data => {
   const schema = Joi.object({
-    currentPassword: Joi.string()
-      .required()
-      .pattern(/^\S*$/),
+    currentPassword: Joi.string().required(),
     newPassword: Joi.string()
       .required()
-      .pattern(/^\S*$/),
+      .pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})(?=.\S*$)/
+      )
+      .messages({
+        'string.pattern.base': `New Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.`
+      }),
     confirmPassword: Joi.string()
       .required()
-      .pattern(/^\S*$/)
+      .pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})(?=.\S*$)/
+      )
+      .messages({
+        'string.pattern.base': `Confirm Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.`
+      })
   });
 
   return schema.validate(data);
@@ -106,9 +118,7 @@ const updateCaloriesValidation = data => {
 
 const resetPasswordValidation = data => {
   const schema = Joi.object({
-    newPassword: Joi.string()
-      .required()
-      .pattern(/^\S*$/)
+    newPassword: Joi.string().required()
   });
 
   return schema.validate(data);
@@ -116,9 +126,7 @@ const resetPasswordValidation = data => {
 
 const twoFactorGenSecretValidation = data => {
   const schema = Joi.object({
-    password: Joi.string()
-      .required()
-      .pattern(/^\S*$/)
+    password: Joi.string().required()
   });
 
   return schema.validate(data);
@@ -144,9 +152,7 @@ const twoFactorEnableValidation = data => {
 const twoFactorRecoverValidation = data => {
   const schema = Joi.object({
     username: Joi.string().required(),
-    password: Joi.string()
-      .required()
-      .pattern(/^\S*$/),
+    password: Joi.string().required(),
     recoveryCode: Joi.string().required()
   });
 
