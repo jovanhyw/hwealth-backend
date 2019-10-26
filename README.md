@@ -49,6 +49,19 @@ DB_CONN =
 
 # JWT Secret
 JWT_SECRET =
+
+# SendGrid API Key
+SENDGRID_API_KEY =
+
+# API Host Name
+# https://hwealth.me
+API_HOST_NAME =
+
+# FRONTEND Host Name
+FRONTEND_HOST_NAME =
+
+# Google Captcha
+CAPTCHA_ANDROID_SECRET_KEY =
 ```
 
 Run your MongoDB before proceeding to the next step. Once MongoDB is running, proceed.

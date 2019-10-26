@@ -124,6 +124,23 @@ const twoFactorGenSecretValidation = data => {
   return schema.validate(data);
 };
 
+const twoFactorAuthenticateValidation = data => {
+  const schema = Joi.object({
+    token: Joi.string().required()
+  });
+
+  return schema.validate(data);
+};
+
+const twoFactorEnableValidation = data => {
+  const schema = Joi.object({
+    secret: Joi.string().required(),
+    token: Joi.string().required()
+  });
+
+  return schema.validate(data);
+};
+
 const twoFactorRecoverValidation = data => {
   const schema = Joi.object({
     username: Joi.string().required(),
@@ -147,4 +164,6 @@ module.exports.createCaloriesValidation = createCaloriesValidation;
 module.exports.updateCaloriesValidation = updateCaloriesValidation;
 module.exports.resetPasswordValidation = resetPasswordValidation;
 module.exports.twoFactorGenSecretValidation = twoFactorGenSecretValidation;
+module.exports.twoFactorAuthenticateValidation = twoFactorAuthenticateValidation;
+module.exports.twoFactorEnableValidation = twoFactorEnableValidation;
 module.exports.twoFactorRecoverValidation = twoFactorRecoverValidation;

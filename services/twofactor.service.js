@@ -4,13 +4,15 @@ const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const {
   twoFactorGenSecretValidation,
+  twoFactorAuthenticateValidation,
+  twoFactorEnableValidation,
   twoFactorRecoverValidation
 } = require('../utils/validation');
 const generateRecoveryCode = require('../utils/generateRecoveryCode');
 const TwoFactorService = {};
 
 TwoFactorService.generateSecret = async (req, res) => {
-  // rmb to do input validation to take passwd
+  // input validation for password
   const { error } = twoFactorGenSecretValidation(req.body);
   if (error)
     return res.status(400).send({
@@ -64,6 +66,12 @@ TwoFactorService.generateSecret = async (req, res) => {
 
 TwoFactorService.authenticate = async (req, res) => {
   // input validation
+  const { error } = twoFactorAuthenticateValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
 
   try {
     const account = await Account.findById({ _id: req.account.accountid });
@@ -122,6 +130,12 @@ TwoFactorService.authenticate = async (req, res) => {
 
 TwoFactorService.enable = async (req, res) => {
   // input validation
+  const { error } = twoFactorEnableValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
 
   try {
     const tokenValid = speakeasy.totp.verify({
@@ -202,7 +216,7 @@ TwoFactorService.enable = async (req, res) => {
 };
 
 TwoFactorService.disable = async (req, res) => {
-  // rmb to do input validation to take passwd
+  // input validation
   const { error } = twoFactorGenSecretValidation(req.body);
   if (error)
     return res.status(400).send({
