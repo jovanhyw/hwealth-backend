@@ -10,5 +10,6 @@ const verifyPreToken = require('../services/auth.service').verifyPreToken;
 router.post('/get-authenticator', verifyToken, twoFactorService.generateSecret);
 router.post('/enable', verifyToken, twoFactorService.enable);
 router.post('/authenticate', verifyPreToken, twoFactorService.authenticate);
+router.post('/disable', verifyToken, twoFactorService.disable);
 
 module.exports = router;

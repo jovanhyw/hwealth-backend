@@ -16,11 +16,12 @@ TwoFactorService.generateSecret = async (req, res) => {
 
   const account = await Account.findById({ _id: req.account.accountid });
 
-  if(account.twoFactorEnabled) {
+  if (account.twoFactorEnabled) {
     return res.status(400).send({
       error: true,
-      message: 'Two Factor Authentication is already enabled. Unable to generate a new secret.'
-    })
+      message:
+        'Two Factor Authentication is already enabled. Unable to generate a new secret.'
+    });
   }
 
   // check if password is correct
@@ -153,6 +154,49 @@ TwoFactorService.enable = async (req, res) => {
         valid: tokenValid
       });
     }
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Internal Server Error.'
+    });
+  }
+};
+
+TwoFactorService.disable = async (req, res) => {
+  // rmb to do input validation to take passwd
+  const { error } = twoFactorGenSecretValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
+
+  const account = await Account.findById({ _id: req.account.accountid });
+
+  if (!account.twoFactorEnabled) {
+    return res.status(400).send({
+      error: true,
+      message: 'Two Factor Authentication is not enabled on this account.'
+    });
+  }
+
+  // check if password is correct
+  const validPass = await bcrypt.compare(req.body.password, account.password);
+  if (!validPass)
+    return res.status(401).send({
+      error: true,
+      message: 'Authentication failed.'
+    });
+
+  try {
+    account.twoFactorEnabled = false;
+    account.twoFactorSecret = null;
+    await account.save();
+
+    res.status(200).send({
+      error: false,
+      message: 'Two Factor Authentication has been disabled.'
+    });
   } catch (err) {
     res.status(500).send({
       error: true,
