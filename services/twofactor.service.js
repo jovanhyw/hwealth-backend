@@ -135,12 +135,42 @@ TwoFactorService.enable = async (req, res) => {
       try {
         await account.save();
 
-        res.status(200).send({
-          error: false,
-          message:
-            'Two Factor Authentication Success. Two Factor Authentication has been enabled successfully.',
-          valid: tokenValid
-        });
+        try {
+          const issuer = 'HWealth Backend Auth Service';
+          const subject = account.username;
+          const audience = 'hwealth';
+
+          const payload = {
+            accountid: account._id,
+            username: account.username,
+            twoFactorAuthenticated: true
+          };
+          const signOptions = {
+            expiresIn: '10m',
+            issuer,
+            subject,
+            audience
+          };
+
+          const jwtToken = jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            signOptions
+          );
+
+          res.status(200).send({
+            error: false,
+            message:
+              'Two Factor Authentication Success. Two Factor Authentication has been enabled successfully.',
+            valid: tokenValid,
+            token: jwtToken
+          });
+        } catch (err) {
+          res.status(500).send({
+            error: true,
+            message: 'Internal Server Error. Unable to create token.'
+          });
+        }
       } catch (err) {
         res.status(500).send({
           error: true,
