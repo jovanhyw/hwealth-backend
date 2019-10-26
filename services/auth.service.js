@@ -21,13 +21,47 @@ AuthService.login = async (req, res) => {
       message: 'Authentication failed.'
     });
 
+  // check if account is locked
+  if (account.locked) {
+    return res.status(401).send({
+      error: true,
+      message:
+        'Your account has been locked. Please contact support for further instructions.'
+    });
+  }
+
   // check if password is correct
   const validPass = await bcrypt.compare(req.body.password, account.password);
-  if (!validPass)
+  if (!validPass) {
+    try {
+      account.failedLoginAttempts += 1;
+      await account.save();
+
+      // if login attempts = 10, lock the account
+      try {
+        if (account.failedLoginAttempts === 10) {
+          account.locked = true;
+        }
+
+        await account.save();
+      } catch (err) {
+        res.status(500).send({
+          error: true,
+          message: 'Internal Server Error.'
+        });
+      }
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
     return res.status(401).send({
       error: true,
       message: 'Authentication failed.'
     });
+  }
 
   // check if email is verified
   if (!account.verified)
@@ -56,6 +90,17 @@ AuthService.login = async (req, res) => {
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, signOptions);
+
+    try {
+      account.failedLoginAttempts = 0;
+      await account.save();
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
     res.status(200).send({
       error: false,
       username: account.username,
