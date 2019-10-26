@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const { twoFactorGenSecretValidation } = require('../utils/validation');
+const generateRecoveryCode = require('../utils/generateRecoveryCode');
 const TwoFactorService = {};
 
 TwoFactorService.generateSecret = async (req, res) => {
@@ -129,9 +130,12 @@ TwoFactorService.enable = async (req, res) => {
     const account = await Account.findById({ _id: req.account.accountid });
 
     if (tokenValid) {
+      const recoveryCodeFriendly = generateRecoveryCode(32);
+      const recoveryCode = recoveryCodeFriendly.replace(/ +/g, '');
+
       account.twoFactorSecret = req.body.secret;
       account.twoFactorEnabled = true;
-      // account.twoFactorRecoveryCode = ?
+      account.twoFactorRecoveryCode = recoveryCode;
       try {
         await account.save();
 
@@ -163,7 +167,8 @@ TwoFactorService.enable = async (req, res) => {
             message:
               'Two Factor Authentication Success. Two Factor Authentication has been enabled successfully.',
             valid: tokenValid,
-            token: jwtToken
+            token: jwtToken,
+            recoveryCode: recoveryCodeFriendly
           });
         } catch (err) {
           res.status(500).send({
@@ -185,6 +190,7 @@ TwoFactorService.enable = async (req, res) => {
       });
     }
   } catch (err) {
+    console.log(err);
     res.status(500).send({
       error: true,
       message: 'Internal Server Error.'
@@ -226,6 +232,34 @@ TwoFactorService.disable = async (req, res) => {
     res.status(200).send({
       error: false,
       message: 'Two Factor Authentication has been disabled.'
+    });
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Internal Server Error.'
+    });
+  }
+};
+
+TwoFactorService.getRecoveryCode = async (req, res) => {
+  try {
+    const account = await Account.findById({ _id: req.account.accountid });
+
+    if (!account.twoFactorEnabled || !account.twoFactorRecoveryCode) {
+      return res.status(404).send({
+        error: true,
+        message:
+          'Two Factor Authentication recovery code not found on this account.'
+      });
+    }
+
+    const recoveryCodeFriendly = account.twoFactorRecoveryCode
+      .replace(/(.{4})/g, '$1 ')
+      .trim();
+
+    res.status(200).send({
+      error: false,
+      recoveryCode: recoveryCodeFriendly
     });
   } catch (err) {
     res.status(500).send({

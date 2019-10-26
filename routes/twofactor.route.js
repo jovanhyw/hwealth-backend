@@ -11,5 +11,6 @@ router.post('/get-authenticator', verifyToken, twoFactorService.generateSecret);
 router.post('/enable', verifyToken, twoFactorService.enable);
 router.post('/authenticate', verifyPreToken, twoFactorService.authenticate);
 router.post('/disable', verifyToken, twoFactorService.disable);
+router.get('/get-recovery-code', verifyToken, twoFactorService.getRecoveryCode);
 
 module.exports = router;
