@@ -23,7 +23,7 @@ MessageService.sendMsg = async (req, res) => {
           members: [req.account.accountid, req.body.recipient]
         });
 
-        conv.save();
+        await conv.save();
         convId = conv._id;
       } catch (err) {
         return res.status(500).send({
@@ -40,7 +40,7 @@ MessageService.sendMsg = async (req, res) => {
         message: req.body.message
       });
 
-      msg.save();
+      await msg.save();
 
       return res.status(200).send({
         error: false,
