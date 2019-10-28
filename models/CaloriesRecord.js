@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const CaloriesRecordSchema = new mongoose.Schema({
   accountId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'Account',
+    required: true
   },
   dateRecorded: {
     type: Date,

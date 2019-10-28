@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const StepsRecordSchema = new mongoose.Schema({
   accountId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'Account',
+    required: true
   },
   dateRecorded: {
     type: Date,
