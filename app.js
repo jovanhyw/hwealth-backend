@@ -20,8 +20,11 @@ const caloriesRecordRoutes = require('./routes/caloriesrecord.route');
 const captchaRoutes = require('./routes/captcha.route');
 const twoFactorRoutes = require('./routes/twofactor.route');
 const adminRoutes = require('./routes/admin.route');
+const conversationRoutes = require('./routes/conversation.route');
+const messageRoutes = require('./routes/message.route');
 
 const verifyToken = require('./services/auth.service').verifyToken;
+const checkAdminRole = require('./services/auth.service').checkAdminRole;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -71,7 +74,9 @@ app.use('/api/steps-record', verifyToken, stepsRecordRoutes);
 app.use('/api/calories-record', verifyToken, caloriesRecordRoutes);
 app.use('/api/captcha', captchaRoutes);
 app.use('/api/two-factor', twoFactorRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/admin', verifyToken, checkAdminRole, adminRoutes);
+app.use('/api/conversation', verifyToken, conversationRoutes);
+app.use('/api/message', verifyToken, messageRoutes);
 
 app.listen(PORT, () => {
   console.log(`Express server started on port ${PORT}`);

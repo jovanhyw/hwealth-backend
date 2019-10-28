@@ -17,7 +17,7 @@ const MessageSchema = new mongoose.Schema({
   }
 });
 
-ConversationSchema.set('timestamps', true);
+MessageSchema.set('timestamps', true);
 
 const Message = mongoose.model('Message', MessageSchema);
 
