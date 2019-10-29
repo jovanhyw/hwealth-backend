@@ -10,7 +10,10 @@ MessageService.sendMsg = async (req, res) => {
 
     // first, check if conv exist
     const conversationExist = await Conversation.findOne({
-      members: [req.account.accountid, req.body.recipient]
+      members: [
+        { accountId: req.account.accountid },
+        { accountId: req.body.recipient }
+      ]
     });
 
     if (conversationExist) {
@@ -20,7 +23,10 @@ MessageService.sendMsg = async (req, res) => {
       // else, create a new conversation
       try {
         const conv = new Conversation({
-          members: [req.account.accountid, req.body.recipient]
+          members: [
+            { accountId: req.account.accountid },
+            { accountId: req.body.recipient }
+          ]
         });
 
         await conv.save();

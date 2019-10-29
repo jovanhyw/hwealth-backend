@@ -1,10 +1,16 @@
 const mongoose = require('mongoose');
 
 const ConversationSchema = new mongoose.Schema({
-  members: {
-    type: Array,
-    required: true
-  }
+  members: [
+    {
+      accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Account',
+        required: true
+      },
+      _id: false
+    }
+  ]
 });
 
 ConversationSchema.set('timestamps', true);
