@@ -1,9 +1,16 @@
 const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
 const MessageService = {};
+const { messageValidation } = require('../utils/validation');
 
 MessageService.sendMsg = async (req, res) => {
   // input validation
+  const { error } = messageValidation(req.body);
+  if (error)
+    return res.status(400).send({
+      error: true,
+      message: error.details[0].message
+    });
 
   try {
     let convId = null;
