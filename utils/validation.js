@@ -127,7 +127,14 @@ const updateCaloriesValidation = data => {
 
 const resetPasswordValidation = data => {
   const schema = Joi.object({
-    newPassword: Joi.string().required()
+    newPassword: Joi.string()
+      .required()
+      .pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})(?=.\S*$)/
+      )
+      .messages({
+        'string.pattern.base': `New Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.`
+      })
   });
 
   return schema.validate(data);
