@@ -98,7 +98,8 @@ AuthService.login = async (req, res) => {
       error: false,
       username: account.username,
       token: token,
-      twoFactorEnabled: account.twoFactorEnabled
+      twoFactorEnabled: account.twoFactorEnabled,
+      role: account.role
     });
   } catch (err) {
     // todo: log the error
