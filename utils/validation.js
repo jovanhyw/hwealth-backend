@@ -205,6 +205,15 @@ const adminUpdateLockValidation = data => {
   return schema.validate(data);
 };
 
+const messageValidation = data => {
+  const schema = Joi.object({
+    recipient: Joi.string().required(),
+    message: Joi.string().required()
+  });
+
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.updateEmailValidation = updateEmailValidation;
@@ -221,3 +230,4 @@ module.exports.twoFactorEnableValidation = twoFactorEnableValidation;
 module.exports.twoFactorRecoverValidation = twoFactorRecoverValidation;
 module.exports.adminUpdateRoleValidation = adminUpdateRoleValidation;
 module.exports.adminUpdateLockValidation = adminUpdateLockValidation;
+module.exports.messageValidation = messageValidation;

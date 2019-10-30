@@ -36,7 +36,6 @@ ConversationService.getAllConversation = async (req, res) => {
       allConversation
     });
   } catch (err) {
-    console.log(err);
     res.status(500).send({
       error: true,
       message: 'Internal Server Error.'
@@ -104,7 +103,6 @@ ConversationService.getAllMessages = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err);
     res.status(500).send({
       error: true,
       message: 'Internal Server Error.'
