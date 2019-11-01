@@ -62,6 +62,30 @@ FRONTEND_HOST_NAME =
 
 # Google Captcha
 CAPTCHA_ANDROID_SECRET_KEY =
+
+################
+# IMPORTANT!!! #
+################
+
+# The keys below here are in hex form and must be generated from
+# the encryptionUtil.js method `getKeyFromPassword`
+#
+# Generate a salt using the `genSalt()` method and 
+# supply the salt and a password to `getKeyFromPassword()`
+# You will receive a Buffer, call a .toString('hex') to the
+# buffer to receive the hex key.
+
+# Encryption Key for 2FA Secret
+ENC_KEY_TFA =
+
+# Encryption Key for 2FA Recovery Code
+ENC_KEY_TFA_REC_CODE =
+
+# Encryption Key for JWT
+ENC_KEY_JWT =
+
+# Encryption Key for Messages
+ENC_KEY_MESSAGE =
 ```
 
 Run your MongoDB before proceeding to the next step. Once MongoDB is running, proceed.
