@@ -16,10 +16,15 @@ MessageService.sendMsg = async (req, res) => {
     let convId = null;
 
     // first, check if conv exist
+    /**
+     * fixed bug; have to use $and to query for the condition
+     * or else it will create another conver with
+     * obj0: recipient, obj1: currUser
+     */
     const conversationExist = await Conversation.findOne({
-      members: [
-        { accountId: req.account.accountid },
-        { accountId: req.body.recipient }
+      $and: [
+        { members: { $elemMatch: { accountId: req.account.accountid } } },
+        { members: { $elemMatch: { accountId: req.body.recipient } } }
       ]
     });
 
