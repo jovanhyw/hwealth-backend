@@ -75,6 +75,7 @@ exports.getKeyFromPassword = getKeyFromPassword = (password, salt) => {
  * and the key from lingering in the memory
  */
 exports.encrypt = encrypt = (messagetext, key) => {
+  key = Buffer.from(key, 'hex');
   const iv = getIV();
   const cipher = crypto.createCipheriv(ALGORITHM.BLOCK_CIPHER, key, iv, {
     authTagLength: ALGORITHM.AUTH_TAG_BYTE_LEN
@@ -96,6 +97,7 @@ exports.encrypt = encrypt = (messagetext, key) => {
  * and the key from lingering in the memory
  */
 exports.decrypt = decrypt = (ciphertext, key) => {
+  key = Buffer.from(key, 'hex');
   ciphertext = Buffer.from(ciphertext, 'hex');
   const authTag = ciphertext.slice(-16);
   const iv = ciphertext.slice(0, 12);
