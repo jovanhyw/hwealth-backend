@@ -167,7 +167,7 @@ TwoFactorService.enable = async (req, res) => {
       const recoveryCode = recoveryCodeFriendly.replace(/ +/g, '');
 
       let encryptedSecret = null;
-      // let encryptedRecoveryCode = null
+      let encryptedRecoveryCode = null;
 
       // encrypt the secret before saving to db
       try {
@@ -186,10 +186,24 @@ TwoFactorService.enable = async (req, res) => {
       }
 
       // encrypt the rec code before saving to db
+      try {
+        encryptedRecoveryCode = encryptionHelper.encrypt(
+          recoveryCode,
+          process.env.ENC_KEY_TFA_REC_CODE
+        );
+      } catch (err) {
+        // error in encryption, but we don't want to
+        // let the end user know this so just throw 500
+        // by right we should log all errors as well
+        res.status(500).send({
+          error: true,
+          message: 'Internal Server Error.'
+        });
+      }
 
       account.twoFactorSecret = encryptedSecret;
       account.twoFactorEnabled = true;
-      account.twoFactorRecoveryCode = recoveryCode;
+      account.twoFactorRecoveryCode = encryptedRecoveryCode;
       try {
         await account.save();
 
@@ -308,7 +322,21 @@ TwoFactorService.getRecoveryCode = async (req, res) => {
       });
     }
 
-    const recoveryCodeFriendly = account.twoFactorRecoveryCode
+    let decryptedRecCode = null;
+    // decrypt the recovery code
+    try {
+      decryptedRecCode = encryptionHelper.decrypt(
+        account.twoFactorRecoveryCode,
+        process.env.ENC_KEY_TFA_REC_CODE
+      );
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
+    const recoveryCodeFriendly = decryptedRecCode
       .replace(/(.{4})/g, '$1 ')
       .trim();
 
@@ -352,7 +380,22 @@ TwoFactorService.recover = async (req, res) => {
   // check if recovery code matches
   const recoveryCodeFriendly = req.body.recoveryCode;
   const recoveryCode = recoveryCodeFriendly.replace(/ +/g, '');
-  if (recoveryCode !== account.twoFactorRecoveryCode) {
+
+  let decryptedRecCode = null;
+  // decrypt the recovery code
+  try {
+    decryptedRecCode = encryptionHelper.decrypt(
+      account.twoFactorRecoveryCode,
+      process.env.ENC_KEY_TFA_REC_CODE
+    );
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Internal Server Error.'
+    });
+  }
+
+  if (recoveryCode !== decryptedRecCode) {
     return res.status(401).send({
       error: true,
       message: 'Recovery Code do not match.'
