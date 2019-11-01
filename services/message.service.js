@@ -2,6 +2,7 @@ const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
 const MessageService = {};
 const { messageValidation } = require('../utils/validation');
+const encryptionHelper = require('../utils/encryptionUtil');
 
 MessageService.sendMsg = async (req, res) => {
   // input validation
@@ -52,10 +53,25 @@ MessageService.sendMsg = async (req, res) => {
     }
 
     try {
+      let encryptedMsg = null;
+
+      // encrypt the msg
+      try {
+        encryptedMsg = encryptionHelper.encrypt(
+          req.body.message,
+          process.env.ENC_KEY_MESSAGE
+        );
+      } catch (err) {
+        res.status(500).send({
+          error: true,
+          message: 'Internal Server Error.'
+        });
+      }
+
       const msg = new Message({
         conversationId: convId,
         sentBy: req.account.accountid,
-        message: req.body.message
+        message: encryptedMsg
       });
 
       await msg.save();

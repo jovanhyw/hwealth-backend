@@ -1,6 +1,7 @@
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const ConversationService = {};
+const encryptionHelper = require('../utils/encryptionUtil');
 
 ConversationService.getAllConversation = async (req, res) => {
   try {
@@ -91,6 +92,21 @@ ConversationService.getAllMessages = async (req, res) => {
         path: 'sentBy',
         select: 'username'
       });
+
+      // decrypt each message
+      try {
+        messages.forEach(msgObj => {
+          msgObj.message = encryptionHelper.decrypt(
+            msgObj.message,
+            process.env.ENC_KEY_MESSAGE
+          );
+        });
+      } catch (err) {
+        res.status(500).send({
+          error: true,
+          message: 'Internal Server Error.'
+        });
+      }
 
       res.status(200).send({
         error: false,
