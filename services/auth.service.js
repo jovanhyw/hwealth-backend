@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const AuthService = {};
 const { loginValidation } = require('../utils/validation');
+const encryptionHelper = require('../utils/encryptionUtil');
 
 AuthService.login = async (req, res) => {
   // login input validation
@@ -84,6 +85,18 @@ AuthService.login = async (req, res) => {
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, signOptions);
 
+    let encryptedJwt = null;
+
+    // encrypt the jwt
+    try {
+      encryptedJwt = encryptionHelper.encrypt(token, process.env.ENC_KEY_JWT);
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
     try {
       account.failedLoginAttempts = 0;
       await account.save();
@@ -97,7 +110,7 @@ AuthService.login = async (req, res) => {
     res.status(200).send({
       error: false,
       username: account.username,
-      token: token,
+      token: encryptedJwt,
       twoFactorEnabled: account.twoFactorEnabled,
       role: account.role
     });
@@ -135,8 +148,23 @@ AuthService.verifyToken = async (req, res, next) => {
     // get token from array[1] that we split
     const bearerToken = bearer[1];
 
+    let decryptedJwt = null;
+
+    // decrypt the jwt
+    try {
+      decryptedJwt = encryptionHelper.decrypt(
+        bearerToken,
+        process.env.ENC_KEY_JWT
+      );
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
     // verify the token
-    const verified = jwt.verify(bearerToken, process.env.JWT_SECRET);
+    const verified = jwt.verify(decryptedJwt, process.env.JWT_SECRET);
 
     try {
       const account = await Account.findById({ _id: verified.accountid });
@@ -190,8 +218,23 @@ AuthService.verifyPreToken = async (req, res, next) => {
     // get token from array[1] that we split
     const bearerToken = bearer[1];
 
+    let decryptedJwt = null;
+
+    // decrypt the jwt
+    try {
+      decryptedJwt = encryptionHelper.decrypt(
+        bearerToken,
+        process.env.ENC_KEY_JWT
+      );
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
     // verify the token
-    const verified = jwt.verify(bearerToken, process.env.JWT_SECRET);
+    const verified = jwt.verify(decryptedJwt, process.env.JWT_SECRET);
 
     req.account = verified;
     next();
