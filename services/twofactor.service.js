@@ -117,10 +117,26 @@ TwoFactorService.authenticate = async (req, res) => {
         };
 
         const jwtToken = jwt.sign(payload, process.env.JWT_SECRET, signOptions);
+
+        let encryptedJwt = null;
+
+        // encrypt the jwt
+        try {
+          encryptedJwt = encryptionHelper.encrypt(
+            jwtToken,
+            process.env.ENC_KEY_JWT
+          );
+        } catch (err) {
+          res.status(500).send({
+            error: true,
+            message: 'Internal Server Error.'
+          });
+        }
+
         res.status(200).send({
           error: false,
           message: 'Two Factor Authentication Success.',
-          token: jwtToken
+          token: encryptedJwt
         });
       } catch (err) {
         // todo: log the error
@@ -230,12 +246,27 @@ TwoFactorService.enable = async (req, res) => {
             signOptions
           );
 
+          let encryptedJwt = null;
+
+          // encrypt the jwt
+          try {
+            encryptedJwt = encryptionHelper.encrypt(
+              jwtToken,
+              process.env.ENC_KEY_JWT
+            );
+          } catch (err) {
+            res.status(500).send({
+              error: true,
+              message: 'Internal Server Error.'
+            });
+          }
+
           res.status(200).send({
             error: false,
             message:
               'Two Factor Authentication Success. Two Factor Authentication has been enabled successfully.',
             valid: tokenValid,
-            token: jwtToken,
+            token: encryptedJwt,
             recoveryCode: recoveryCodeFriendly
           });
         } catch (err) {
