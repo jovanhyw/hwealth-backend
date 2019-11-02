@@ -112,4 +112,32 @@ ProfileService.calculateBMI = async (req, res) => {
   }
 };
 
+ProfileService.getPro = async (req, res) => {
+  try {
+    let professionals = await Profile.find({}, 'fullname -_id').populate({
+      path: 'accountId',
+      select: 'username role',
+      match: {
+        role: 'Professional'
+      }
+    });
+
+    professionals = professionals.filter(profile => {
+      return profile.accountId !== null;
+    });
+
+    res.status(200).send({
+      error: false,
+      message: 'List of professionals retrieved successfully.',
+      professionals
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      error: false,
+      message: 'Internal Server Error.'
+    });
+  }
+};
+
 module.exports = ProfileService;
