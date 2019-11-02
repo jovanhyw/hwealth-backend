@@ -10,6 +10,7 @@ const {
 } = require('../utils/validation');
 const generateRecoveryCode = require('../utils/generateRecoveryCode');
 const TwoFactorService = {};
+const encryptionHelper = require('../utils/encryptionUtil');
 
 TwoFactorService.generateSecret = async (req, res) => {
   // input validation for password
@@ -76,8 +77,23 @@ TwoFactorService.authenticate = async (req, res) => {
   try {
     const account = await Account.findById({ _id: req.account.accountid });
 
+    let decryptedSecret = null;
+
+    // decrypt the 2FA secret
+    try {
+      decryptedSecret = encryptionHelper.decrypt(
+        account.twoFactorSecret,
+        process.env.ENC_KEY_TFA
+      );
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
     const tokenValid = speakeasy.totp.verify({
-      secret: account.twoFactorSecret,
+      secret: decryptedSecret,
       encoding: 'base32',
       token: req.body.token
     });
@@ -101,10 +117,26 @@ TwoFactorService.authenticate = async (req, res) => {
         };
 
         const jwtToken = jwt.sign(payload, process.env.JWT_SECRET, signOptions);
+
+        let encryptedJwt = null;
+
+        // encrypt the jwt
+        try {
+          encryptedJwt = encryptionHelper.encrypt(
+            jwtToken,
+            process.env.ENC_KEY_JWT
+          );
+        } catch (err) {
+          res.status(500).send({
+            error: true,
+            message: 'Internal Server Error.'
+          });
+        }
+
         res.status(200).send({
           error: false,
           message: 'Two Factor Authentication Success.',
-          token: jwtToken
+          token: encryptedJwt
         });
       } catch (err) {
         // todo: log the error
@@ -150,9 +182,44 @@ TwoFactorService.enable = async (req, res) => {
       const recoveryCodeFriendly = generateRecoveryCode(32);
       const recoveryCode = recoveryCodeFriendly.replace(/ +/g, '');
 
-      account.twoFactorSecret = req.body.secret;
+      let encryptedSecret = null;
+      let encryptedRecoveryCode = null;
+
+      // encrypt the secret before saving to db
+      try {
+        encryptedSecret = encryptionHelper.encrypt(
+          req.body.secret,
+          process.env.ENC_KEY_TFA
+        );
+      } catch (err) {
+        // error in encryption, but we don't want to
+        // let the end user know this so just throw 500
+        // by right we should log all errors as well
+        res.status(500).send({
+          error: true,
+          message: 'Internal Server Error.'
+        });
+      }
+
+      // encrypt the rec code before saving to db
+      try {
+        encryptedRecoveryCode = encryptionHelper.encrypt(
+          recoveryCode,
+          process.env.ENC_KEY_TFA_REC_CODE
+        );
+      } catch (err) {
+        // error in encryption, but we don't want to
+        // let the end user know this so just throw 500
+        // by right we should log all errors as well
+        res.status(500).send({
+          error: true,
+          message: 'Internal Server Error.'
+        });
+      }
+
+      account.twoFactorSecret = encryptedSecret;
       account.twoFactorEnabled = true;
-      account.twoFactorRecoveryCode = recoveryCode;
+      account.twoFactorRecoveryCode = encryptedRecoveryCode;
       try {
         await account.save();
 
@@ -179,12 +246,27 @@ TwoFactorService.enable = async (req, res) => {
             signOptions
           );
 
+          let encryptedJwt = null;
+
+          // encrypt the jwt
+          try {
+            encryptedJwt = encryptionHelper.encrypt(
+              jwtToken,
+              process.env.ENC_KEY_JWT
+            );
+          } catch (err) {
+            res.status(500).send({
+              error: true,
+              message: 'Internal Server Error.'
+            });
+          }
+
           res.status(200).send({
             error: false,
             message:
               'Two Factor Authentication Success. Two Factor Authentication has been enabled successfully.',
             valid: tokenValid,
-            token: jwtToken,
+            token: encryptedJwt,
             recoveryCode: recoveryCodeFriendly
           });
         } catch (err) {
@@ -207,7 +289,6 @@ TwoFactorService.enable = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err);
     res.status(500).send({
       error: true,
       message: 'Internal Server Error.'
@@ -271,7 +352,21 @@ TwoFactorService.getRecoveryCode = async (req, res) => {
       });
     }
 
-    const recoveryCodeFriendly = account.twoFactorRecoveryCode
+    let decryptedRecCode = null;
+    // decrypt the recovery code
+    try {
+      decryptedRecCode = encryptionHelper.decrypt(
+        account.twoFactorRecoveryCode,
+        process.env.ENC_KEY_TFA_REC_CODE
+      );
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
+    const recoveryCodeFriendly = decryptedRecCode
       .replace(/(.{4})/g, '$1 ')
       .trim();
 
@@ -315,7 +410,22 @@ TwoFactorService.recover = async (req, res) => {
   // check if recovery code matches
   const recoveryCodeFriendly = req.body.recoveryCode;
   const recoveryCode = recoveryCodeFriendly.replace(/ +/g, '');
-  if (recoveryCode !== account.twoFactorRecoveryCode) {
+
+  let decryptedRecCode = null;
+  // decrypt the recovery code
+  try {
+    decryptedRecCode = encryptionHelper.decrypt(
+      account.twoFactorRecoveryCode,
+      process.env.ENC_KEY_TFA_REC_CODE
+    );
+  } catch (err) {
+    res.status(500).send({
+      error: true,
+      message: 'Internal Server Error.'
+    });
+  }
+
+  if (recoveryCode !== decryptedRecCode) {
     return res.status(401).send({
       error: true,
       message: 'Recovery Code do not match.'
