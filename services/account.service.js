@@ -31,7 +31,7 @@ AccountService.getAccount = async (req, res) => {
     });
   } catch (err) {
     res.status(404).send({
-      error: false,
+      error: true,
       message: 'Account ID not found.'
     });
   }
@@ -67,7 +67,6 @@ AccountService.register = async (req, res) => {
   const salt = await bcrypt.genSalt(12);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-  // Todo: generate verificationToken, email/sms to user
   const account = new Account({
     username,
     password: hashedPassword,
