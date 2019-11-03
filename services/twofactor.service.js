@@ -407,6 +407,13 @@ TwoFactorService.recover = async (req, res) => {
       message: 'Authentication failed.'
     });
 
+  if (!account.twoFactorEnabled) {
+    return res.status(400).send({
+      error: true,
+      message: 'Two factor authentication is not enabled on this account.'
+    });
+  }
+
   // check if recovery code matches
   const recoveryCodeFriendly = req.body.recoveryCode;
   const recoveryCode = recoveryCodeFriendly.replace(/ +/g, '');
