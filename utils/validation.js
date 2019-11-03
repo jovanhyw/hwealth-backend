@@ -2,7 +2,14 @@ const Joi = require('@hapi/joi');
 
 const registerValidation = data => {
   const schema = Joi.object({
-    fullname: Joi.string().required(),
+    fullname: Joi.string()
+      .required()
+      .min(3)
+      .max(30)
+      .pattern(/[a-zA-Z ,.'-]+$/)
+      .messages({
+        'string.pattern.base': `Invalid full name.`
+      }),
     username: Joi.string()
       .required()
       .min(5)
@@ -14,7 +21,7 @@ const registerValidation = data => {
     password: Joi.string()
       .required()
       .pattern(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})(?=.\S*$)/
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*<>])(?=.{8,64})(?=.\S*$)/
       )
       .messages({
         'string.pattern.base': `Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.`
@@ -60,7 +67,7 @@ const updatePasswordValidation = data => {
     newPassword: Joi.string()
       .required()
       .pattern(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})(?=.\S*$)/
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*<>])(?=.{8,64})(?=.\S*$)/
       )
       .messages({
         'string.pattern.base': `New Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.`
@@ -68,7 +75,7 @@ const updatePasswordValidation = data => {
     confirmPassword: Joi.string()
       .required()
       .pattern(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})(?=.\S*$)/
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*<>])(?=.{8,64})(?=.\S*$)/
       )
       .messages({
         'string.pattern.base': `Confirm Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.`
@@ -130,7 +137,7 @@ const resetPasswordValidation = data => {
     newPassword: Joi.string()
       .required()
       .pattern(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})(?=.\S*$)/
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*<>])(?=.{8,64})(?=.\S*$)/
       )
       .messages({
         'string.pattern.base': `New Password must contain 1 Uppercase, 1 Lowercase, 1 Number, 1 Special Character, a minimum of 8 characters in total, and no white spaces.`
