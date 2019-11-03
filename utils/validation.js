@@ -5,8 +5,8 @@ const registerValidation = data => {
     fullname: Joi.string()
       .required()
       .min(3)
-      .max(30)
-      .pattern(/[a-zA-Z ,.'-]+$/)
+      .max(80)
+      .pattern(/^[a-zA-Z ,.'-]+$/)
       .messages({
         'string.pattern.base': `Invalid full name.`
       }),
@@ -14,9 +14,9 @@ const registerValidation = data => {
       .required()
       .min(5)
       .max(30)
-      .pattern(/^\S*$/)
+      .pattern(/^[a-zA-Z0-9]+\S*$/)
       .messages({
-        'string.pattern.base': `No white spaces allowed in username.`
+        'string.pattern.base': `Only alphanumeric and no white spaces allowed in username.`
       }),
     password: Joi.string()
       .required()
