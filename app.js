@@ -27,8 +27,12 @@ const stepsRecordRoutes = require('./routes/stepsrecord.route');
 const caloriesRecordRoutes = require('./routes/caloriesrecord.route');
 const captchaRoutes = require('./routes/captcha.route');
 const twoFactorRoutes = require('./routes/twofactor.route');
+const adminRoutes = require('./routes/admin.route');
+const conversationRoutes = require('./routes/conversation.route');
+const messageRoutes = require('./routes/message.route');
 
 const verifyToken = require('./services/auth.service').verifyToken;
+const checkAdminRole = require('./services/auth.service').checkAdminRole;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -53,10 +57,33 @@ mongoose
 // We need this because "cookies" is true in csrfProtection
 app.use(cookieParser());
 
+const allowedOrigins = [
+  'https://hwealth.netlify.com',
+  'https://dev--hwealth.netlify.com',
+  'https://hwealth-admin.netlify.com',
+  'https://dev--hwealth-admin.netlify.com'
+];
+
 // max body limit 10kb to prevent DOS. can up if needed.
 app.use(express.json({ limit: '10kb' }));
 app.use(helmet());
-app.use(cors()); // todo: stricter cors settings
+// app.use(
+//   cors({
+//     origin: function(origin, callback) {
+//       // allow requests with no origin
+//       // (like mobile apps or curl requests)
+//       if (!origin) return callback(null, true);
+//       if (allowedOrigins.indexOf(origin) === -1) {
+//         var msg =
+//           'The CORS policy for this site does not ' +
+//           'allow access from the specified Origin.';
+//         return callback(new Error(msg), false);
+//       }
+//       return callback(null, true);
+//     }
+//   })
+// );
+app.use(cors()); // remove this and use cors above for prod
 app.use(xss());
 app.use(mongoSanitize());
 app.use((err, req, res, next) => {
@@ -81,6 +108,9 @@ app.use('/api/steps-record', verifyToken, stepsRecordRoutes);
 app.use('/api/calories-record', verifyToken, caloriesRecordRoutes);
 app.use('/api/captcha', captchaRoutes);
 app.use('/api/two-factor', twoFactorRoutes);
+app.use('/api/admin', verifyToken, checkAdminRole, adminRoutes);
+app.use('/api/conversation', verifyToken, conversationRoutes);
+app.use('/api/message', verifyToken, messageRoutes);
 
 app.listen(PORT, () => {
   console.log(`Express server started on port ${PORT}`);

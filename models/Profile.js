@@ -24,7 +24,8 @@ const ProfileSchema = new mongoose.Schema({
   },
   accountId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'Account',
+    required: true
   }
 });
 

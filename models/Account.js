@@ -45,6 +45,10 @@ const AccountSchema = new mongoose.Schema({
     require: true,
     default: false
   },
+  lockReason: {
+    type: String,
+    trim: true
+  },
   failedLoginAttempts: {
     type: Number,
     trim: true,

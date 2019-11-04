@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const AuthService = {};
 const { loginValidation } = require('../utils/validation');
+const encryptionHelper = require('../utils/encryptionUtil');
 
 AuthService.login = async (req, res) => {
   // login input validation
@@ -21,13 +22,40 @@ AuthService.login = async (req, res) => {
       message: 'Authentication failed.'
     });
 
-  // check if password is correct
-  const validPass = await bcrypt.compare(req.body.password, account.password);
-  if (!validPass)
+  // check if account is locked
+  if (account.locked) {
     return res.status(401).send({
       error: true,
-      message: 'Authentication failed.'
+      message:
+        'Your account has been locked. Please contact support for further instructions.'
     });
+  }
+
+  // check if password is correct
+  const validPass = await bcrypt.compare(req.body.password, account.password);
+  if (!validPass) {
+    try {
+      account.failedLoginAttempts += 1;
+
+      // if login attempts = 10, lock the account
+      if (account.failedLoginAttempts >= 10) {
+        account.locked = true;
+        account.lockReason = 'Max login attempts.';
+      }
+
+      await account.save();
+
+      return res.status(401).send({
+        error: true,
+        message: 'Authentication failed.'
+      });
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+  }
 
   // check if email is verified
   if (!account.verified)
@@ -56,10 +84,35 @@ AuthService.login = async (req, res) => {
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, signOptions);
+
+    let encryptedJwt = null;
+
+    // encrypt the jwt
+    try {
+      encryptedJwt = encryptionHelper.encrypt(token, process.env.ENC_KEY_JWT);
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
+    try {
+      account.failedLoginAttempts = 0;
+      await account.save();
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
     res.status(200).send({
       error: false,
       username: account.username,
-      token: token
+      token: encryptedJwt,
+      twoFactorEnabled: account.twoFactorEnabled,
+      role: account.role
     });
   } catch (err) {
     // todo: log the error
@@ -95,8 +148,23 @@ AuthService.verifyToken = async (req, res, next) => {
     // get token from array[1] that we split
     const bearerToken = bearer[1];
 
+    let decryptedJwt = null;
+
+    // decrypt the jwt
+    try {
+      decryptedJwt = encryptionHelper.decrypt(
+        bearerToken,
+        process.env.ENC_KEY_JWT
+      );
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
     // verify the token
-    const verified = jwt.verify(bearerToken, process.env.JWT_SECRET);
+    const verified = jwt.verify(decryptedJwt, process.env.JWT_SECRET);
 
     try {
       const account = await Account.findById({ _id: verified.accountid });
@@ -150,8 +218,23 @@ AuthService.verifyPreToken = async (req, res, next) => {
     // get token from array[1] that we split
     const bearerToken = bearer[1];
 
+    let decryptedJwt = null;
+
+    // decrypt the jwt
+    try {
+      decryptedJwt = encryptionHelper.decrypt(
+        bearerToken,
+        process.env.ENC_KEY_JWT
+      );
+    } catch (err) {
+      res.status(500).send({
+        error: true,
+        message: 'Internal Server Error.'
+      });
+    }
+
     // verify the token
-    const verified = jwt.verify(bearerToken, process.env.JWT_SECRET);
+    const verified = jwt.verify(decryptedJwt, process.env.JWT_SECRET);
 
     req.account = verified;
     next();
@@ -159,6 +242,26 @@ AuthService.verifyPreToken = async (req, res, next) => {
     res.status(401).send({
       error: true,
       message: 'Invalid token.'
+    });
+  }
+};
+
+AuthService.checkAdminRole = async (req, res, next) => {
+  try {
+    const account = await Account.findById({ _id: req.account.accountid });
+
+    if (account.role !== 'Admin') {
+      return res.status(403).send({
+        error: true,
+        message: 'You do not have access to this endpoint.'
+      });
+    }
+
+    next();
+  } catch (err) {
+    res.status(404).send({
+      error: true,
+      message: 'Account not found.'
     });
   }
 };
