@@ -55,24 +55,37 @@ const allowedOrigins = [
 
 // max body limit 10kb to prevent DOS. can up if needed.
 app.use(express.json({ limit: '10kb' }));
-app.use(helmet());
-// app.use(
-//   cors({
-//     origin: function(origin, callback) {
-//       // allow requests with no origin
-//       // (like mobile apps or curl requests)
-//       if (!origin) return callback(null, true);
-//       if (allowedOrigins.indexOf(origin) === -1) {
-//         var msg =
-//           'The CORS policy for this site does not ' +
-//           'allow access from the specified Origin.';
-//         return callback(new Error(msg), false);
-//       }
-//       return callback(null, true);
-//     }
-//   })
-// );
-app.use(cors()); // remove this and use cors above for prod
+app.use(
+  helmet({
+    // we set hsts in nginx instead
+    hsts: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"]
+      }
+    },
+    referrerPolicy: {
+      policy: 'same-origin'
+    }
+  })
+);
+app.use(
+  cors({
+    origin: function(origin, callback) {
+      // allow requests with no origin
+      // (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        var msg =
+          'The CORS policy for this site does not ' +
+          'allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    }
+  })
+);
+// app.use(cors()); // remove this and use cors above for prod
 app.use(xss());
 app.use(mongoSanitize());
 app.use((err, req, res, next) => {
