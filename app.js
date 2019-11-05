@@ -55,29 +55,30 @@ const allowedOrigins = [
 
 // max body limit 10kb to prevent DOS. can up if needed.
 app.use(express.json({ limit: '10kb' }));
-app.use(
-  helmet({
-    // we set hsts in nginx instead
-    hsts: false,
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"]
-      }
-    },
-    referrerPolicy: {
-      policy: 'same-origin'
-    },
-    featurePolicy: {
-      features: {
-        camera: ["'none"],
-        geolocation: ["'none'"],
-        microphone: ["'none'"],
-        speaker: ["'none'"],
-        vibrate: ["'none'"]
-      }
-    }
-  })
-);
+app.use(helmet());
+// app.use(
+//   helmet({
+//     // we set hsts in nginx instead
+//     hsts: false,
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"]
+//       }
+//     },
+//     referrerPolicy: {
+//       policy: 'same-origin'
+//     },
+//     featurePolicy: {
+//       features: {
+//         camera: ["'none"],
+//         geolocation: ["'none'"],
+//         microphone: ["'none'"],
+//         speaker: ["'none'"],
+//         vibrate: ["'none'"]
+//       }
+//     }
+//   })
+// );
 // app.use(
 //   cors({
 //     origin: function(origin, callback) {
