@@ -61,7 +61,14 @@ app.use(
     hsts: false,
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"]
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self", '*.bootstrapcdn.com'],
+        scriptSrc: [
+          "'self'",
+          '*.jquery.com',
+          '*.cloudflare.com',
+          '*.bootstrapcdn.com'
+        ]
       }
     },
     referrerPolicy: {
