@@ -66,6 +66,15 @@ app.use(
     },
     referrerPolicy: {
       policy: 'same-origin'
+    },
+    featurePolicy: {
+      features: {
+        camera: ["'none"],
+        geolocation: ["'none'"],
+        microphone: ["'none'"],
+        speaker: ["'none'"],
+        vibrate: ["'none'"]
+      }
     }
   })
 );
