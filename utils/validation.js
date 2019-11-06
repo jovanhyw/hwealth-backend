@@ -14,7 +14,7 @@ const registerValidation = data => {
       .required()
       .min(5)
       .max(30)
-      .pattern(/^[a-zA-Z0-9]+\S*$/)
+      .pattern(/^[a-zA-Z0-9]{3,30}$/)
       .messages({
         'string.pattern.base': `Only alphanumeric and no white spaces allowed in username.`
       }),
