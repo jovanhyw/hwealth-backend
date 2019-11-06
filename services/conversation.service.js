@@ -4,8 +4,10 @@ const ConversationService = {};
 const encryptionHelper = require('../utils/encryptionUtil');
 
 ConversationService.getAllConversation = async (req, res) => {
+  console.log("wtf")
   try {
     // this will return all the conver related to this accountId
+    console.log("result1")
     const allConversation = await Conversation.find(
       {
         'members.accountId': req.account.accountid
@@ -15,6 +17,7 @@ ConversationService.getAllConversation = async (req, res) => {
       path: 'members.accountId',
       select: 'username'
     });
+    console.log("result2", allConversation)
 
     if (!allConversation) {
       return res.status(404).send({
@@ -37,6 +40,7 @@ ConversationService.getAllConversation = async (req, res) => {
       allConversation
     });
   } catch (err) {
+    console.log("error!!!", err)
     res.status(500).send({
       error: true,
       message: 'Internal Server Error.'

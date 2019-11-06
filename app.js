@@ -6,14 +6,6 @@ const cors = require('cors');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
-const cookieParser = require('cookie-parser');
-const csrf = require('csurf')
-
-
-// Route middlewares
-const csrfProtection = csrf({
-  cookie: true
-});
 
 /**
  * Import routes
@@ -53,9 +45,6 @@ mongoose
 /**
  * Middlewares
  */
-// Parse cookies
-// We need this because "cookies" is true in csrfProtection
-app.use(cookieParser());
 
 const allowedOrigins = [
   'https://hwealth.netlify.com',
@@ -66,24 +55,53 @@ const allowedOrigins = [
 
 // max body limit 10kb to prevent DOS. can up if needed.
 app.use(express.json({ limit: '10kb' }));
-app.use(helmet());
-// app.use(
-//   cors({
-//     origin: function(origin, callback) {
-//       // allow requests with no origin
-//       // (like mobile apps or curl requests)
-//       if (!origin) return callback(null, true);
-//       if (allowedOrigins.indexOf(origin) === -1) {
-//         var msg =
-//           'The CORS policy for this site does not ' +
-//           'allow access from the specified Origin.';
-//         return callback(new Error(msg), false);
-//       }
-//       return callback(null, true);
-//     }
-//   })
-// );
-app.use(cors()); // remove this and use cors above for prod
+app.use(
+  helmet({
+    // we set hsts in nginx instead
+    hsts: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self", '*.bootstrapcdn.com'],
+        scriptSrc: [
+          "'self'",
+          '*.jquery.com',
+          '*.cloudflare.com',
+          '*.bootstrapcdn.com'
+        ]
+      }
+    },
+    referrerPolicy: {
+      policy: 'same-origin'
+    },
+    featurePolicy: {
+      features: {
+        camera: ["'none"],
+        geolocation: ["'none'"],
+        microphone: ["'none'"],
+        speaker: ["'none'"],
+        vibrate: ["'none'"]
+      }
+    }
+  })
+);
+app.use(
+  cors({
+    origin: function(origin, callback) {
+      // allow requests with no origin
+      // (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        var msg =
+          'The CORS policy for this site does not ' +
+          'allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    }
+  })
+);
+// app.use(cors()); // remove this and use cors above for prod
 app.use(xss());
 app.use(mongoSanitize());
 app.use((err, req, res, next) => {
