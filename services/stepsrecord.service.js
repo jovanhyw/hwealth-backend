@@ -11,6 +11,13 @@ StepsRecordService.createStepsRecord = async (req, res) => {
       message: error.details[0].message
     });
 
+  if (req.body.totalSteps < 0) {
+    return res.status(400).send({
+      error: true,
+      message: 'Steps cannot be a negative number.'
+    });
+  }
+
   const stepsRecord = new StepsRecord({
     accountId: req.account.accountid,
     ...req.body
@@ -59,6 +66,13 @@ StepsRecordService.updateStepsRecord = async (req, res) => {
       error: true,
       message: error.details[0].message
     });
+
+  if (req.body.totalSteps < 0) {
+    return res.status(400).send({
+      error: true,
+      message: 'Steps cannot be a negative number.'
+    });
+  }
 
   try {
     const record = await StepsRecord.findById({ _id: req.params.id });
