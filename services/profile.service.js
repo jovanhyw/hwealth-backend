@@ -1,4 +1,6 @@
 const Profile = require('../models/Profile');
+const Account = require('../models/Account')
+const Conversation = require('../models/Conversation');
 const ProfileService = {};
 const calcBMI = require('../utils/bmi');
 const {
@@ -138,6 +140,7 @@ ProfileService.getPro = async (req, res) => {
       message: 'Internal Server Error.'
     });
   }
+}
 
   // custom end point
 ProfileService.getChatUser = async (req, res) => {
@@ -244,6 +247,7 @@ ProfileService.getChatUser = async (req, res) => {
       message: 'Internal Server Error.'
     });
   }
+  
 };
 
 module.exports = ProfileService;
