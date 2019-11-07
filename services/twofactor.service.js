@@ -86,7 +86,7 @@ TwoFactorService.authenticate = async (req, res) => {
         process.env.ENC_KEY_TFA
       );
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: true,
         message: 'Internal Server Error.'
       });
@@ -127,7 +127,7 @@ TwoFactorService.authenticate = async (req, res) => {
             process.env.ENC_KEY_JWT
           );
         } catch (err) {
-          res.status(500).send({
+          return res.status(500).send({
             error: true,
             message: 'Internal Server Error.'
           });
@@ -140,7 +140,7 @@ TwoFactorService.authenticate = async (req, res) => {
         });
       } catch (err) {
         // todo: log the error
-        res.status(500).send({
+        return res.status(500).send({
           error: true,
           message: 'Internal Server Error. Unable to create token.'
         });
@@ -195,7 +195,7 @@ TwoFactorService.enable = async (req, res) => {
         // error in encryption, but we don't want to
         // let the end user know this so just throw 500
         // by right we should log all errors as well
-        res.status(500).send({
+        return res.status(500).send({
           error: true,
           message: 'Internal Server Error.'
         });
@@ -211,7 +211,7 @@ TwoFactorService.enable = async (req, res) => {
         // error in encryption, but we don't want to
         // let the end user know this so just throw 500
         // by right we should log all errors as well
-        res.status(500).send({
+        return res.status(500).send({
           error: true,
           message: 'Internal Server Error.'
         });
@@ -255,7 +255,7 @@ TwoFactorService.enable = async (req, res) => {
               process.env.ENC_KEY_JWT
             );
           } catch (err) {
-            res.status(500).send({
+            return res.status(500).send({
               error: true,
               message: 'Internal Server Error.'
             });
@@ -360,7 +360,7 @@ TwoFactorService.getRecoveryCode = async (req, res) => {
         process.env.ENC_KEY_TFA_REC_CODE
       );
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: true,
         message: 'Internal Server Error.'
       });
@@ -426,7 +426,7 @@ TwoFactorService.recover = async (req, res) => {
       process.env.ENC_KEY_TFA_REC_CODE
     );
   } catch (err) {
-    res.status(500).send({
+    return res.status(500).send({
       error: true,
       message: 'Internal Server Error.'
     });

@@ -102,24 +102,24 @@ ConversationService.getAllMessages = async (req, res) => {
           );
         });
       } catch (err) {
-        res.status(500).send({
+        return res.status(500).send({
           error: true,
           message: 'Internal Server Error.'
         });
       }
 
-      res.status(200).send({
+      return res.status(200).send({
         error: false,
         messages
       });
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: true,
         message: 'Internal Server Error. Unable to retrieve messages.'
       });
     }
   } catch (err) {
-    res.status(500).send({
+    return res.status(500).send({
       error: true,
       message: 'Internal Server Error.'
     });
