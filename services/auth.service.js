@@ -50,7 +50,7 @@ AuthService.login = async (req, res) => {
         message: 'Authentication failed.'
       });
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: true,
         message: 'Internal Server Error.'
       });
@@ -91,7 +91,7 @@ AuthService.login = async (req, res) => {
     try {
       encryptedJwt = encryptionHelper.encrypt(token, process.env.ENC_KEY_JWT);
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: true,
         message: 'Internal Server Error.'
       });
@@ -101,7 +101,7 @@ AuthService.login = async (req, res) => {
       account.failedLoginAttempts = 0;
       await account.save();
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: true,
         message: 'Internal Server Error.'
       });
@@ -116,7 +116,7 @@ AuthService.login = async (req, res) => {
     });
   } catch (err) {
     // todo: log the error
-    res.status(500).send({
+    return res.status(500).send({
       error: true,
       message: 'Internal Server Error. Unable to create token.'
     });
@@ -157,7 +157,7 @@ AuthService.verifyToken = async (req, res, next) => {
         process.env.ENC_KEY_JWT
       );
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: true,
         message: 'Internal Server Error.'
       });
@@ -177,7 +177,7 @@ AuthService.verifyToken = async (req, res, next) => {
         });
       }
     } catch (err) {
-      res.status(404).send({
+      return res.status(404).send({
         error: true,
         message: 'Account ID not found.'
       });
@@ -186,7 +186,7 @@ AuthService.verifyToken = async (req, res, next) => {
     req.account = verified;
     next();
   } catch (err) {
-    res.status(401).send({
+    return res.status(401).send({
       error: true,
       message: 'Invalid token.'
     });
@@ -227,7 +227,7 @@ AuthService.verifyPreToken = async (req, res, next) => {
         process.env.ENC_KEY_JWT
       );
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: true,
         message: 'Internal Server Error.'
       });
@@ -239,7 +239,7 @@ AuthService.verifyPreToken = async (req, res, next) => {
     req.account = verified;
     next();
   } catch (err) {
-    res.status(401).send({
+    return res.status(401).send({
       error: true,
       message: 'Invalid token.'
     });
@@ -259,7 +259,7 @@ AuthService.checkAdminRole = async (req, res, next) => {
 
     next();
   } catch (err) {
-    res.status(404).send({
+    return res.status(404).send({
       error: true,
       message: 'Account not found.'
     });
