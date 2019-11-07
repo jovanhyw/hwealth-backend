@@ -134,14 +134,12 @@ ProfileService.getPro = async (req, res) => {
       professionals
     });
   } catch (err) {
-    console.log(err);
     res.status(500).send({
       error: true,
       message: 'Internal Server Error.'
     });
   }
 };
-
 
 // custom end point
 ProfileService.getChatUser = async (req, res) => {
@@ -169,7 +167,6 @@ ProfileService.getChatUser = async (req, res) => {
             professionals
           });
         } catch (err) {
-          console.log(err);
           res.status(500).send({
             error: true,
             message: 'Internal Server Error.'
@@ -232,7 +229,6 @@ ProfileService.getChatUser = async (req, res) => {
             professionals: temp_professionals
           });
         } catch (err) {
-          console.log(err);
           res.status(500).send({
             error: true,
             message: 'Internal Server Error.'
@@ -241,13 +237,11 @@ ProfileService.getChatUser = async (req, res) => {
       }
     }
   } catch (err) {
-    console.log(err);
     res.status(500).send({
       error: true,
       message: 'Internal Server Error.'
     });
   }
-  
 };
 
 module.exports = ProfileService;
