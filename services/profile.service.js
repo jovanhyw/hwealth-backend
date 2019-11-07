@@ -1,5 +1,5 @@
 const Profile = require('../models/Profile');
-const Account = require('../models/Account')
+const Account = require('../models/Account');
 const Conversation = require('../models/Conversation');
 const ProfileService = {};
 const calcBMI = require('../utils/bmi');
