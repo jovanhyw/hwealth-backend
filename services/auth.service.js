@@ -157,9 +157,9 @@ AuthService.verifyToken = async (req, res, next) => {
         process.env.ENC_KEY_JWT
       );
     } catch (err) {
-      return res.status(500).send({
+      return res.status(401).send({
         error: true,
-        message: 'Internal Server Error.'
+        message: 'Invalid token.'
       });
     }
 
@@ -227,9 +227,9 @@ AuthService.verifyPreToken = async (req, res, next) => {
         process.env.ENC_KEY_JWT
       );
     } catch (err) {
-      return res.status(500).send({
+      return res.status(401).send({
         error: true,
-        message: 'Internal Server Error.'
+        message: 'Invalid token.'
       });
     }
 
