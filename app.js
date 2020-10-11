@@ -47,10 +47,10 @@ mongoose
  */
 
 const allowedOrigins = [
-  'https://hwealth.netlify.com',
-  'https://dev--hwealth.netlify.com',
-  'https://hwealth-admin.netlify.com',
-  'https://dev--hwealth-admin.netlify.com'
+  'https://hwealth.netlify.app',
+  'https://dev--hwealth.netlify.app',
+  'https://hwealth-admin.netlify.app',
+  'https://dev--hwealth-admin.netlify.app'
 ];
 
 // max body limit 10kb to prevent DOS. can up if needed.
